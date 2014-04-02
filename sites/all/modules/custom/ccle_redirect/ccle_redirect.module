@@ -1,0 +1,253 @@
+<?php
+/**********************************************************************************************************/
+/*** CCLE Redirect Module for Drupal 7 ***/
+/**********************************************************************************************************/
+/** LAST UPDATED 20140327 **/
+/**
+ * Parses incoming link and redirects to pre-assigned Library Research Guide (maintained by Scott Martin)
+ * If one guide is specified in the incoming link, the user is redirected straight to the LibGuide
+ * If more than one guide is specified in the incoming link, the user is redirected to a landing page that
+ * contains one link for each LibGuide
+ *
+ * Options:
+ *
+ * 1. Setting the variable '$always_go_to_landing_page=1' will always display the landing page including the
+ * case where only one guide is specified in the incoming link.
+ *
+ * https://jira.library.ucla.edu/browse/WEBSVCS-215
+ *
+ * darrowco@library.ucla.edu
+ * UCLA Library.
+ *
+ */
+function ccle_redirect_menu() {
+    $items = array();
+
+    $items['redirect/ccle'] = array(
+        'description' => 'Available research guides:',
+        'page callback' => 'ccle_redirect_list',
+        'page arguments' => array(1),
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+    );
+    return $items;
+}
+
+function ccle_redirect_list() {
+
+    $always_go_to_landing_page = 0; // this is set to 1 below to go to the landing page when only 1 Lib Guide is found
+
+    // how many classes were sent in the URL? term-subj-crs-class ===> term-dept-class-section
+    $lib_guide_count = count( $_GET )-1;
+    $term_submitted = array();
+    $subject_submitted = array();
+    $category_submitted = array();
+    $section_submitted = array();
+    $class_guides = array(array());
+    $class_guides_names = array();
+    $output = '';
+
+    // loop for each class sent in the URL
+    for ($i=0; $i<$lib_guide_count; $i++) {
+        $j = 'c'.$i;
+        $term_submitted[$i] = $_GET[$j]['t'];
+        $subject_submitted[$i] = $_GET[$j]['sub'];
+        $category_submitted[$i] = $_GET[$j]['cat'];
+        $section_submitted[$i] = $_GET[$j]['sec'];
+
+        $term_submitted[$i] = str_replace(' ', '', $term_submitted[$i]);
+        $subject_submitted[$i] = str_replace(' ', '', $subject_submitted[$i]);
+        $category_submitted[$i] = str_replace(' ', '', $category_submitted[$i]);
+        $section_submitted[$i] = str_replace(' ', '', $section_submitted[$i]);
+
+        $term_submitted[$i] = str_replace('%20', '', $term_submitted[$i]);
+        $subject_submitted[$i] = str_replace('%20', '', $subject_submitted[$i]);
+        $category_submitted[$i] = str_replace('%20', '', $category_submitted[$i]);
+        $section_submitted[$i] = str_replace('%20', '', $section_submitted[$i]);
+
+        // this database read is slated to be replaced (by storing data in content types?)
+        // Get all entries in the rc_res_rules table (built during the module install with data in the .install file)
+        if ($entries = ccle_redirect_entry_load($subject_submitted[$i])) {
+            $rows = array();
+            foreach ($entries as $entry) {
+                // Sanitize the data before handing it off to the theme layer.
+                $rows[] = array_map('check_plain', (array) $entry);
+            }
+
+            // de-dupe the array, The feeds module may write duplicate rows per David Rickard
+            $rows = array_map("unserialize", array_unique(array_map("serialize", $rows)));
+            // reindex array to set index to be monotonically increasing from zero to max
+            $rows = array_values($rows);
+
+            $rd_subj[$i] = '';
+            $rd_crs[$i] = '';
+            $rd_class[$i] = '';
+            $rd_guide_name[$i] = '';
+
+            // loop for each row (containing the specified subject (dept) returned from the db
+            foreach ($rows as $row) {
+
+                if( $row['term'] == $term_submitted[$i] ){
+                    if( strlen( $row['crsidx'] ) > 0 ){
+                        if( $row['crsidx'] == $category_submitted[$i] ){
+                            if( strlen( $row['classidx'] ) > 0 ){
+                                if( $row['classidx'] == $section_submitted[$i] ){
+                                    $rd_class[$i] = $row['lib_guide'];
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if( strlen( $row['crsidx'] ) > 0 ){
+                    if( $row['crsidx'] == $category_submitted[$i] ){
+                        if( strlen( $row['classidx'] ) == 0 ){
+//                            if( strlen( $row['term'] ) == 0 ){
+                                $rd_crs[$i] = $row['lib_guide'];
+//                            }
+                        }
+                    }
+                }
+
+                if( strlen( $row['crsidx'] ) == 0 ){
+                    if( strlen( $row['classidx'] ) == 0 ){
+//                        if( strlen( $row['term'] ) == 0 ){
+                          if( strlen( $rd_subj[$i] ) == 0 ){
+                            $rd_subj[$i] = $row['lib_guide'];
+                          } else{
+                              $rd_subj[$i] .= '899DC1AEAF63D2B20B4810CD1A5816BB1DDAE16847AE00B9656246C3CB33A624';
+                              $rd_subj[$i] .= $row['lib_guide'];
+                              $always_go_to_landing_page+=1;
+                          }
+//                        }
+                    }
+                }
+
+                if( strlen( $rd_class[$i] ) > 0 || strlen( $rd_crs[$i] ) > 0 || strlen( $rd_subj[$i] ) > 0 ){
+                    $class_guides[$i][0] = $term_submitted[$i];
+                    $class_guides[$i][1] = $subject_submitted[$i];
+                    $class_guides[$i][2] = $category_submitted[$i];
+                    $class_guides[$i][3] = $section_submitted[$i];
+                }
+
+                // cycle through redirect_subj, crs and class and branch accordingly
+                // Position after populating the lower array elements
+                if( strlen( $rd_class[$i] ) > 0 ){
+                    $class_guides[$i][4] = $rd_class[$i];
+                } elseif( strlen( $rd_crs[$i] ) > 0 ) {
+                    $class_guides[$i][4] = $rd_crs[$i];
+                } elseif ( strlen( $rd_subj[$i] ) > 0 ) {
+                    $class_guides[$i][4] = $rd_subj[$i];
+                } else {
+                    drupal_goto( $path = 'http://guides.library.ucla.edu' ); // this may not be needed, below may be enough
+                }
+
+                if( isset( $class_guides[$i][5] ) ){
+                    if( strlen( $class_guides[$i][5] ) == 0 ){
+                        if( strlen( $row['lib_guide_name'] ) > 0 ){
+                            $class_guides[$i][5] = $row['lib_guide_name'];
+                        }
+                    } else {
+                        if( strlen( $row['lib_guide_name'] ) > 0 ){
+                        $class_guides[$i][5] .= '899DC1AEAF63D2B20B4810CD1A5816BB1DDAE16847AE00B9656246C3CB33A624'.$row['lib_guide_name'];
+                        }
+                    }
+                } else {
+                    if( strlen( $row['lib_guide_name'] ) > 0 ){
+                        $class_guides[$i][5] = $row['lib_guide_name'];
+                    }
+                }
+            }
+
+            // if only one libguide was submitted, and there is a libguide url from the db, redirect now, skip more processing
+            // else
+            // keep fall through and keep processing
+            if( $lib_guide_count + $always_go_to_landing_page == 1 ){
+                if( strlen( $class_guides[$i][4] ) > 0 ){
+                    drupal_goto( $path = $class_guides[$i][4] );
+                } else {
+                    drupal_goto( $path = 'http://guides.library.ucla.edu' ); // this may not be needed, below may be enough
+                }
+            }
+
+        } else { // else if no matches are found in the database
+            drupal_goto( $path = 'http://guides.library.ucla.edu' ); // this may not be needed, below may be enough
+        }
+    }
+
+    if (preg_match("/899DC1AEAF63D2B20B4810CD1A5816BB1DDAE16847AE00B9656246C3CB33A624/", $class_guides[0][4])) {
+        $go_redirect = 0;
+    } else {
+        $go_redirect = 1;
+        $nm1 = '';
+        $redirect_here = '';
+        foreach ($class_guides as $class_guide) {
+            if( strlen($nm1) > 0 ){
+                if( strcmp($class_guide[4], $nm1)!=0 ){
+                    $go_redirect = 0;
+                } else {
+                    $redirect_here = $class_guide[4];
+                }
+            }
+            $nm1 = $class_guide[4];
+        }
+    }
+
+    if($go_redirect == 1 ){
+        if( strlen( $redirect_here ) > 0 ){
+            drupal_goto( $path = $redirect_here );
+        } else {
+            drupal_goto( $path = 'http://guides.library.ucla.edu' ); // this may cover most cases
+        }
+    } else {
+        // delete any rows with duplicate libguide links
+        foreach($class_guides as $i => $suba){
+            foreach($class_guides as $i2 => $suba2){
+                if($suba[4]==$suba2[4] && $i!=$i2){
+                    unset($class_guides[$i]);
+                }
+            }
+        }
+
+        // reindex array to set index to be monotonically increasing from zero to max
+        $class_guides = array_values($class_guides);
+
+        if (preg_match("/899DC1AEAF63D2B20B4810CD1A5816BB1DDAE16847AE00B9656246C3CB33A624/", $class_guides[0][4])) {
+            // loop through and check for one subject. two guides
+            $split_urls = explode("899DC1AEAF63D2B20B4810CD1A5816BB1DDAE16847AE00B9656246C3CB33A624", $class_guides[0][4]);
+            $split_names = explode("899DC1AEAF63D2B20B4810CD1A5816BB1DDAE16847AE00B9656246C3CB33A624", $class_guides[0][5]);
+            $i = 0;
+            foreach( $split_urls as $split_url){
+                $class_guides_names[$i][0] = l($split_names[$i], $split_urls[$i]);
+                $i+=1;
+            }
+        } else {
+            // loop through and put link, link title into an array
+            for ($i=0; $i<count($class_guides); $i++) {
+                $class_guides_names[$i][0] = l($class_guides[$i][5], $class_guides[$i][4]);
+            }
+        }
+
+        $output = "More than one guide may be useful for this class. Please select one of the following guides.";
+        $output .= theme('table', array('rows' => $class_guides_names));
+        return $output;
+    }
+}
+
+/**
+ * Read from the database using a filter array.
+ *
+ */
+function ccle_redirect_entry_load($entry = array()) {
+    //Read all fields from the rc_res_rules table.
+    $query = db_select('ccle_redirect','u');
+    $query
+        ->condition('u.subj_area',$entry,'=')
+        ->fields('u',array('term','subj_area','crsidx','classidx','lib_guide','lib_guide_name'))
+        ->range(0,50);
+    $result=$query->execute();
+
+// drupal_set_message(t('No Lib-Guides have been added yet.')); // display on _menu page to user
+
+    return $result;
+}

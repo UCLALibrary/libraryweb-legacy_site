@@ -1,0 +1,10 @@
+name = ccle_redirect
+description = Parse CCLE submission and redirect to the appropriate LibGuide
+package = CCLE Redirect
+version = VERSION
+core = 7.x
+files[] = ccle_redirect.module
+; Information added by drupal.org packaging script on 2010-03-21
+version = "7.1"
+project = "drupal"
+datestamp = "1269192313"
