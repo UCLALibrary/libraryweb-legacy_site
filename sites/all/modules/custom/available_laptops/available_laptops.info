@@ -1,0 +1,5 @@
+name = available_laptops
+description = Returns each location and the amount of laptops available at each.
+core = 7.x
+version = 7.x-0.1-dev
+package = CLICC modules

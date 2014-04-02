@@ -1,0 +1,186 @@
+/* @override 
+	http://drupaltest.library.ucla.edu/sites/all/themes/ucla_library/skins/ucla_library_default/ucla-library-default.css?lqup9o */
+
+/* Skinr styles
+/-------------------------------------------------------------- */
+
+/*Block Border Styles*/
+
+.no-gutter .gutter {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.border-top {
+  border-top: 1px solid #999;
+  padding-top: 29px;
+}
+
+.border-right .gutter {
+  border-right: 1px solid #999;
+  margin-right: -1px;
+  padding-right: 29px;
+}
+
+.border-left .gutter {
+  border-left: 1px solid #999;
+  margin-left: 0;
+  padding-left: 29px;
+}
+
+.border-right + .border-left .gutter {
+  border: none;
+}
+
+.block.fusion-right.border-left .gutter {
+  margin-left: -1px;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #999;
+  padding-bottom: 29px;
+}
+
+.border-bottom + border-top .gutter {
+  border: none;
+}
+
+.no-gutter.border-bottom {
+  padding-bottom: 0;
+  line-height:0;
+  margin-top:-30px;
+}
+
+/*Header Style*/
+
+.italics-header {
+  color: #333333;
+  font-family: "Times New Roman",Times,serif;
+  font-size: 17px;
+  font-style: italic;
+  font-weight: bold;
+  line-height: 1em;
+  margin: 0;
+  padding: 0;
+}
+
+.italics-header .gutter {
+  padding-bottom: 8px;
+}
+
+.header-group .italics-header {
+  color: #eee;
+  font-size: 14px;
+  line-height: 16px;
+  margin-bottom: 0px;
+  margin-top: 8px;
+}
+
+.header-group .italics-header .gutter {
+  padding-bottom: 2px;
+  padding-top: 2px;
+}
+
+/*- vertical-menu Menu Style -*/
+
+.block.vertical-menu li {
+  display: block;
+  list-style-image: none;
+  list-style-type: none;
+  list-style: none;
+  padding: 0.5em 0.25em;
+  text-align: right;
+}
+
+.block.vertical-menu li a {
+  color: #000099;
+}
+
+.block.vertical-menu li a.active {
+	color: #000;
+	text-decoration: none;
+}
+
+/*- horizontal-menu Menu Style -*/
+
+.block.horizontal-menu .gutter {
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+}
+
+.block.horizontal-menu ul.menu {
+  margin: 0 0 0 1px;
+  width: 576px;
+}
+
+.block.horizontal-menu li {
+  background-color: #FFFFFF;
+  display: block;
+  float: left;
+  list-style-image: none;
+  list-style-type: none;
+  list-style: none;
+  overflow: hidden;
+  padding: 0;
+  text-align: center;
+  width: 192px;
+}
+
+.block.horizontal-menu li a {
+  border-right: 1px solid #999999;
+  color: #000;
+  display: block;
+  font-weight: normal;
+  line-height: 16px;
+  padding: 16px 6px 17px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.block.horizontal-menu li a.active {
+  background-color: #999;
+}
+
+/*-Gray Background Page -*/
+
+.page .gray {
+  background-color: #666666;
+  color: #FFFFFF;
+}
+
+.page .gray a {
+  color: #FFFFFF;
+}
+
+.page .gray .block .horizontal-menu li,
+.page .gray .block .vertical-menu li {
+  background-color: #666666;
+}
+
+.page .gray .block .vertical-menu li a,
+.page .gray .block .horizontal-menu li a {
+  color: #FFFFFF;
+}
+
+/*-Black Background Page -*/
+
+.page .black {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.page .black a {
+  color: #FFFFFF;
+}
+
+.page .black .block .horizontal-menu li,
+.page .black.block .vertical-menu li {
+  background-color: #000000;
+}
+
+.page .black .block .vertical-menu li a,
+.page .gray .block .horizontal-menu li a {
+  color: #FFFFFF;
+}
+

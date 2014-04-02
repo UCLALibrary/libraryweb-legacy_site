@@ -1,0 +1,8 @@
+name = "Menu Parent Link"
+description = "Provides a block that links to the current page's active-trail parent"
+
+core = 7.x
+dependencies[] = menu
+
+files[] = menu_parent_links.module
+

@@ -1,0 +1,10 @@
+name = Powell-Res Rules
+description = Rules for Powell-Res
+package = Powell-Res modules
+core = 7.x
+
+; Information added by drupal.org packaging script on 2012-07-21
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "powell_res"
+datestamp = "1342830256"

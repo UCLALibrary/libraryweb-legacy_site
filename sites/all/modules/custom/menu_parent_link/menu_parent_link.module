@@ -1,0 +1,75 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+ 
+function menu_parent_link_block_info() {
+  $blocks['menu_parent_link_main_menu'] = array(
+    'info' => t('"Go up a level" link for Main Menu'), 
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+ 
+function menu_parent_link_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'menu_parent_link_main_menu':
+      $block['subject'] = NULL;
+      $block['content'] = array(
+        '#markup' => menu_parent_link_get_parent(current_path(), 'main-menu'),
+      );
+      break;
+  }
+  return $block;
+}
+
+/*function to find the parent menu item based on the current path*/
+function menu_parent_link_get_parent($path, $menu) {
+          
+             $query = db_select('menu_links','ml');
+             $query 
+                ->condition('link_path',$path)
+                ->condition('menu_name',$menu)
+                ->fields('ml',array('plid','mlid'))
+                ->orderBy('mlid','DESC');
+
+                 $result = $query->execute();
+ 
+$parents = array('options'=> array(), 'links' => array(),);
+foreach($result as $record){
+  if($record->plid != 0){
+    $parent = menu_link_load($record->plid);
+    $parent['options']['html'] = FALSE; 
+    $parents['links'][$record->plid] = array('title' => $parent['link_title'], 'href' => $parent['link_path'], 'options' => $parent['options']); 
+  }         
+}
+if(count($parents['links']) > 1) {
+//render as list
+  $parents['attributes']['class'] = array('links');
+  return theme_links($parents);
+}elseif(count($parents['links']) > 0) {
+//render as single
+  $link = '';
+  foreach($parents['links'] as $item) {
+    $item['options']['attributes']['class'][] = 'single-item';
+    $item['options']['attributes']['title'] = t('Go up a level');
+    $link = l($item['title'], $item['href'], $item['options']);
+  }
+  return $link;
+}else{
+  $item['options']['attributes']['class'][] = 'single-item';
+  $item['options']['attributes']['title'] = t('Go up a level');
+  $item['title'] = t('Homepage');
+  $item['href'] = '<front>';
+  $link = l($item['title'], $item['href'], $item['options']);
+  return $link;
+}
+}
+?>

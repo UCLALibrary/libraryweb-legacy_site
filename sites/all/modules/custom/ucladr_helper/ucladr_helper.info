@@ -1,0 +1,5 @@
+name = UCLA Data Registry Helper
+description = "Module used to create an un-cached landing page for the Data Registry project."
+package = UCLA Data Registry
+core = 7.x
+version = "7.x-1.0"

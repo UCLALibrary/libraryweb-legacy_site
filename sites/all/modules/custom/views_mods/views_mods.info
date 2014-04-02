@@ -1,0 +1,8 @@
+name = Views MODS
+description = Views style plugin to render node content as MODS.
+package = Views
+core = 7.x
+version = 7.x-1.0
+dependencies[] = views
+
+files[] = views/plugins/views_plugin_style_mods.inc

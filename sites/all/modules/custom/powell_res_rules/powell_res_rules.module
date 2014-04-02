@@ -1,0 +1,470 @@
+<?php
+
+/**
+ * Save an entry in the database.
+ *
+ * use db_insert().
+ *
+ */
+function powell_res_rules_entry_insert($entry) {
+  $return_value = NULL;
+  try {
+    $return_value = db_insert('powell_res_rules')
+                    ->fields($entry)
+                    ->execute();
+  }
+  catch (Exception $e) {
+    drupal_set_message(t('db_insert failed. Message = %message, query= %query',
+      array('%message' => $e->getMessage(), '%query' => $e->query_string)), 'error');
+  }
+  return $return_value;
+}
+
+/**
+ * Update an entry in the database.
+ *
+ */
+function powell_res_rules_entry_update($entry) {
+  try {
+    $count = db_update('powell_res_rules')
+              ->fields($entry)
+              ->condition('pid', $entry['pid'])
+              ->execute();
+  }
+  catch (Exception $e) {
+    drupal_set_message(t('db_update failed. Message = %message, query= %query',
+      array('%message' => $e->getMessage(), '%query' => $e->query_string)), 'error');
+  }
+  return $count;
+}
+
+/**
+ * Delete an entry from the database.
+ *
+ */
+function powell_res_rules_entry_delete($entry) {
+  db_delete('powell_res_rules')
+    ->condition('pid', $entry['pid'])
+    ->execute();
+}
+
+
+/**
+ * Read from the database using a filter array.
+ *
+ */
+function powell_res_rules_entry_load($entry = array()) {
+  // Read all fields from the powell_res_rules table.
+  $select = db_select('powell_res_rules', 'example');
+//  $select->condition('user_group', 'Graduate');
+  $select->fields('example');
+
+  // Add each field and value as a condition to this query.
+  foreach ($entry as $field => $value) {
+    $select->condition($field, $value);
+  }
+  // Return the result in object format.
+  return $select->execute()->fetchAll();
+}
+
+/**
+ * Render a filtered list of entries in the database.
+ *
+ */
+/**
+function powell_res_rules_advanced_list() {
+  $output = '';
+
+  $select = db_select('powell_res_rules', 'e');
+  // Join the users table, so we can get the entry creator's username.
+  $select->join('users', 'u', 'e.uid = u.uid');
+  // Select these specific fields for the output.
+  $select->addField('e', 'pid');
+  $select->addField('u', 'user_group', 'username');
+  $select->addField('e', 'user_group');
+  $select->addField('e', 'cls_lim');
+  $select->addField('e', 'gsr_lim');
+  // Filter only persons named "John".
+  $select->condition('e.user_group', 'John');
+  // Filter only persons older than 18 years.
+  $select->condition('e.gsr_lim', 18, '>');
+  // Make sure we only get items 0-49, for scalability reasons.
+  $select->range(0, 50);
+
+  // Now, loop all these entries and show them in a table. Note that there is no
+  // db_fetch_* object or array function being called here. Also note that the
+  // following line could have been written as
+  // $entries = $select->execute()->fetchAll() which would return each selected
+  // record as an object instead of an array.
+  $entries = $select->execute()->fetchAll(PDO::FETCH_ASSOC);
+  if (!empty($entries)) {
+    $rows = array();
+    foreach ($entries as $entry) {
+      // Sanitize the data before handing it off to the theme layer.
+      $rows[] = array_map('check_plain', $entry);
+    }
+    // Make a table for them.
+    $header = array(t('Id'), t('Created by'), t('User Group'), t('Time Limit (hours) Classroom'), t('Time Limit (hours) Group Study Rooms'), t('Time Limit (hours) PODs'), t('Advance Notice (days) Classroom'), t('Advance Notice (days) Group Study Rooms'), t('Advance Notice (days) PODs'), t('Multi-Resource'), t('Limit per time period'), t('Unit of time for period'), t('Group verify'));
+    $output .= theme('table', array('header' => $header, 'rows' => $rows));
+  }
+  else {
+    drupal_set_message(t('No entries meet the filter criteria (Name = "John" and Age > 18).'));
+  }
+  return $output;
+}
+**/
+
+/**
+ * Implements hook_help().
+ *
+ */
+/**
+function powell_res_rules_help($path) {
+  $output = '';
+  switch ($path) {
+    case 'examples/powell_res_rules':
+      $output = t('Generate a list of all entries in the database. There is no filter in the query.');
+      break;
+    case 'examples/powell_res_rules/advanced':
+      $output  = t('A more complex list of entries in the database.') . ' ';
+      $output .= t('Only the entries with user_group = "John" and age older than 18 years are shown, the username of the person who created the entry is also shown.');
+      break;
+    case 'examples/powell_res_rules/update':
+      $output = t('Demonstrates a database update operation.');
+      break;
+    case 'examples/powell_res_rules/add':
+      $output = t('Add an entry to the powell_res_rules table.');
+      break;
+  }
+  return $output;
+}
+**/
+
+/**
+ * Implements hook_menu().
+ *
+ * Set up calls to drupal_get_form() for all our example cases.
+ */
+function powell_res_rules_menu() {
+  $items = array();
+  $items['examples/powell_res_rules'] = array(
+    'title' => 'Powell-Res Rules',
+    'page callback' => 'powell_res_rules_list',
+    'access callback' => TRUE,
+  );
+  $items['examples/powell_res_rules/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['examples/powell_res_rules/add'] = array(
+    'title' => 'Add entry',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('powell_res_rules_form_add'),
+    'access callback' => TRUE,
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -9,
+  );
+  $items['examples/powell_res_rules/update'] = array(
+    'title' => 'Update entry',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('powell_res_rules_form_update'),
+    'type' => MENU_LOCAL_TASK,
+    'access callback' => TRUE,
+    'weight' => -5,
+  );
+  $items['examples/powell_res_rules/advanced'] = array(
+    'title' => 'Advanced list',
+    'page callback' => 'powell_res_rules_advanced_list',
+    'access callback' => TRUE,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+/**
+ * Render a list of entries in the database.
+ */
+function powell_res_rules_list() {
+  $output = '';
+
+  // Get all entries in the powell_res_rules table.
+  if ($entries = powell_res_rules_entry_load()) {
+    $rows = array();
+    foreach ($entries as $entry) {
+      // Sanitize the data before handing it off to the theme layer.
+      $rows[] = array_map('check_plain', (array) $entry);
+    }
+    // Make a table for them.
+    $header = array(t('Id'), t('Uid'), t('User Group'), t('Time Limit (hours) Classroom'), t('Time Limit (hours) Group Study Room'), t('Time Limit (hours) PODs'), t('Advance Notice (days) Classroom'), t('Advance Notice (days) Group Study Room'), t('Advance Notice (days) PODs'), t('Multi-Resource'), t('Limit per time period'), t('unit for time period'), t('Group verify'));
+    $output .= theme('table', array('header' => $header, 'rows' => $rows));
+  }
+  else {
+    drupal_set_message(t('No entries have been added yet.'));
+  }
+  return $output;
+}
+
+/**
+ * Set up the form.
+ */
+function powell_res_rules_form_add($form, &$form_state) {
+  $form = array();
+
+  $form['add'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Add a rule entry'),
+  );
+  $form['add']['user_group'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('User Group'),
+    '#size'  => 15,
+  );
+  $form['add']['cls_lim'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('Time Limit (hours) Classroom'),
+    '#size'  => 15,
+  );
+  $form['add']['gsr_lim'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('Time Limit (hours) Group Study Room'),
+    '#size'  => 15,
+  );
+  $form['add']['pod_lim'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('Time Limit (hours) POD'),
+    '#size'  => 15,
+  );
+  $form['add']['cls_adv'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('Advance Limit (days) Classroom'),
+    '#size'  => 15,
+  );
+  $form['add']['gsr_adv'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('Advance Limit (days) Group Study Room'),
+    '#size'  => 15,
+  );
+  $form['add']['pod_adv'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('Advance Limit (days) POD'),
+    '#size'  => 15,
+  );
+  $form['add']['multi_res'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('Multi-Resource'),
+    '#size'  => 15,
+  );
+  $form['add']['time_per'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('limit per time period'),
+    '#size'  => 15,
+  );
+  $form['add']['time_unit'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('unit for time period'),
+    '#size'  => 15,
+  );
+  $form['add']['group_verify'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('verify group'),
+    '#size'  => 15,
+  );
+  $form['add']['submit'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Add'),
+  );
+
+  return $form;
+}
+
+/**
+ * Submit handler for 'add entry' form.
+ */
+function powell_res_rules_form_add_submit($form, &$form_state) {
+
+    drupal_set_message(t("Created entry"));		
+
+  global $user;
+
+  // Save the submitted entry.
+  $entry = array(
+    'user_group'    => $form_state['values']['user_group'],
+    'cls_lim' => $form_state['values']['cls_lim'],
+    'gsr_lim'     => $form_state['values']['gsr_lim'],
+    'pod_lim'     => $form_state['values']['pod_lim'],
+    'cls_adv' => $form_state['values']['cls_adv'],
+    'gsr_adv'     => $form_state['values']['gsr_adv'],
+    'pod_adv'     => $form_state['values']['pod_adv'],
+    'multi_res'     => $form_state['values']['multi_res'],
+    'time_per'     => $form_state['values']['time_per'],
+    'time_unit'     => $form_state['values']['time_unit'],
+    'group_verify'     => $form_state['values']['group_verify'],
+    'uid'     => $user->uid,
+  );
+  // write to db
+  $return = powell_res_rules_entry_insert($entry);
+  if ($return) {
+    drupal_set_message(t("Created entry @entry", array('@entry' => print_r($entry, TRUE))));
+  }
+}
+
+/**
+ * Sample UI to update a record.
+ */
+function powell_res_rules_form_update($form, &$form_state) {
+  $form = array(
+    '#prefix' => '<div id="updateform">',
+    '#suffix' => '</div>',
+  );
+
+  $entries = powell_res_rules_entry_load();
+  $keyed_entries = array();
+  if (empty($entries)) {
+    $form['no_values'] = array(
+      '#value' => t("No entries exist in the table powell_res_rules table."),
+    );
+    return $form;
+  }
+
+  foreach ($entries as $entry) {
+    $options[$entry->pid] = t("@pid: @user_group @cls_lim (@gsr_lim) @pod_lim @cls_adv (@gsr_adv) @pod_adv @multi_res @time_per @time_unit @group_verify", array('@pid' => $entry->pid, '@user_group' => $entry->user_group, '@cls_lim' => $entry->cls_lim, '@gsr_lim' => $entry->gsr_lim, '@pod_lim' => $entry->pod_lim, '@cls_adv' => $entry->cls_adv, '@gsr_adv' => $entry->gsr_adv, '@pod_adv' => $entry->pod_adv, '@multi_res' => $entry->multi_res, '@time_per' => $entry->time_per, '@time_unit' => $entry->time_unit, '@group_verify'=> $entry->group_verify));
+    $keyed_entries[$entry->pid] = $entry;
+  }
+  $default_entry = !empty($form_state['values']['pid']) ? $keyed_entries[$form_state['values']['pid']] : $entries[0];
+
+  $form_state['entries'] = $keyed_entries;
+
+  $form['pid'] = array(
+    '#type' => 'select',
+    '#options' => $options,
+    '#title' => t('Choose entry to update'),
+    '#default_value' => $default_entry->pid,
+    '#ajax' => array(
+      'wrapper' => 'updateform',
+      'callback' => 'powell_res_rules_form_update_callback',
+    ),
+  );
+
+  $form['user_group'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated first user_group'),
+    '#size' => 15,
+    '#default_value' => $default_entry->user_group,
+  );
+
+  $form['cls_lim'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated cls_lim'),
+    '#size' => 15,
+    '#default_value' => $default_entry->cls_lim,
+  );
+  $form['gsr_lim'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated gsr_lim'),
+    '#size' => 15,
+    '#default_value' => $default_entry->gsr_lim,
+  );
+  $form['pod_lim'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated pod_lim'),
+    '#size' => 15,
+    '#default_value' => $default_entry->pod_lim,
+  );
+
+  $form['cls_adv'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated cls_adv'),
+    '#size' => 15,
+    '#default_value' => $default_entry->cls_adv,
+  );
+  $form['gsr_adv'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated gsr_adv'),
+    '#size' => 15,
+    '#default_value' => $default_entry->gsr_adv,
+  );
+  $form['pod_adv'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated pod_adv'),
+    '#size' => 15,
+    '#default_value' => $default_entry->pod_adv,
+  );
+  $form['multi_res'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated multi_res'),
+    '#size' => 15,
+    '#default_value' => $default_entry->multi_res,
+  );
+  $form['time_per'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated time_per'),
+    '#size' => 15,
+    '#default_value' => $default_entry->time_per,
+  );
+  $form['time_unit'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Updated time_unit'),
+    '#size' => 15,
+    '#default_value' => $default_entry->time_unit,
+  );
+  $form['group_verify'] = array(
+    '#type' => 'textfield',
+    '#title' => t('verify group'),
+    '#size' => 15,
+    '#default_value' => $default_entry->group_verify,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Update'),
+  );
+  return $form;
+}
+
+/**
+ * AJAX callback handler for the pid select.
+ *
+ * When the pid changes, populates the defaults from the database in the form.f
+ */
+function powell_res_rules_form_update_callback($form, $form_state) {
+  $entry = $form_state['entries'][$form_state['values']['pid']];
+  // Setting the #value of items is the only way I was able to figure out
+  // to get replaced defaults on these items. #default_value will not do it
+  // and shouldn't.
+  foreach (array('user_group', 'cls_lim', 'gsr_lim', 'pod_lim', 'cls_adv', 'gsr_adv', 'pod_adv', 'multi_res', 'time_per', 'time_unit', 'group_verify') as $item) {
+    $form[$item]['#value'] = $entry->$item;
+  }
+  return $form;
+}
+
+/**
+ * Submit handler for 'update entry' form.
+ */
+function powell_res_rules_form_update_submit($form, &$form_state) {
+  global $user;
+
+  // Save the submitted entry.
+  $entry = array(
+    'pid' => $form_state['values']['pid'],
+    'user_group' => $form_state['values']['user_group'],
+    'cls_lim' => $form_state['values']['cls_lim'],
+    'gsr_lim' => $form_state['values']['gsr_lim'],
+    'pod_lim' => $form_state['values']['pod_lim'],
+    'cls_adv' => $form_state['values']['cls_adv'],
+    'gsr_adv' => $form_state['values']['gsr_adv'],
+    'pod_adv' => $form_state['values']['pod_adv'],
+    'multi_res' => $form_state['values']['multi_res'],
+    'time_per' => $form_state['values']['time_per'],
+    'time_unit' => $form_state['values']['time_unit'],
+    'group_verify' => $form_state['values']['group_verify'],
+    'uid' => $user->uid,
+  );
+  $count = powell_res_rules_entry_update($entry);
+  drupal_set_message(t("Updated entry @entry (@count row updated)", array('@count' => $count, '@entry' => print_r($entry, TRUE))));
+}
+/**
+ * @} End of "defgroup powell_res".
+ */
+

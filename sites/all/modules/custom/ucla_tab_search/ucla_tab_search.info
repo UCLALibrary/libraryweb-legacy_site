@@ -1,0 +1,5 @@
+name = UCLA Tab Search
+description = Custom tab forms for searching on the UCLA Library homepage.
+core = 7.x
+version = "7.x-1.0"
+dependencies[] = ucla_search

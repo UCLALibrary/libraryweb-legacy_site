@@ -1,0 +1,5 @@
+name = DR Module
+description = "Module used to create an un-cached landing page for the Data Registry project. <br>Chris Cabrera Thompson, UCLA Library"
+package = CCT Modules
+core = 7.x
+files[] = drpage.module

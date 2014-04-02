@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the UCLA LIB Homepage Spotlight feature.
+ */
+
+include_once 'ucla_lib_homepage_spotlight.features.inc';

@@ -1,0 +1,2284 @@
+<?php
+
+/**********************************************************************************************************/
+/*** krumo print time example for debugging time problems *************************************************/
+/**********************************************************************************************************/
+//krumo(date('g:ia \o\n l jS F Y', $zone[0]));
+
+
+/**********************************************************************************************************/
+/*** Master validation function for the Powell-Res form *******************************************************/
+/**********************************************************************************************************/
+/**
+ * Master validation function for the customer survey form - uses per-stage 
+ * validation and calls functions for each one.
+ * 
+ * @param type $form
+ * @param type $form_state
+ * @return type 
+ */
+function powell_res_form_page_one_validate($form, &$form_state) {
+  $checkboxErrorMsg1 = 'Please select a checkbox before clicking on the Delete button.';
+  $checkboxErrorMsg2 = 'Please select a checkbox before clicking on the Delete button.';
+  if (!empty($form_state['page_num']) && $form_state['page_num'] == 3) {
+    if (!empty($form_state['values']['op']) && $form_state['values']['op'] == 'Delete') {
+      if (!empty($form_state['values'][0])) {
+	$oneChecked = 0;
+	for ($i=0; $i<=sizeof($form_state['values'][0]); $i++){ // note that the length may be greater than sizeof if rom 0 is disabled; loop 1 extra time; the !empty prevents problems if n+1 does not exist
+	  if( isset($form_state['values'][0][$i]) ){ // use isset instead of !empty to see if an array element exitss
+	    if( $form_state['values'][0][$i]>=1 || ($form_state['values'][0][$i] == '0' && is_string($form_state['values'][0][$i])) ){
+    	      $oneChecked = 1;
+	    }
+	  }
+	}
+	if( $oneChecked != 1 ){
+	  form_set_error('', $checkboxErrorMsg1);
+	}
+      } else {
+	    form_set_error('', $checkboxErrorMsg2);
+      }
+    }
+  } else if (!empty($form_state['page_num']) && $form_state['page_num'] == 4 && session_variable_get('powell-res','noResources') == 0) {
+    if (!$form_state['values']['date']) {
+      form_set_error('date', 'Please enter a date and time.');
+    }
+  } else if (!empty($form_state['page_num']) && $form_state['page_num'] == 5 && $form_state['values']['op'] != 'Back') { // allow back even if missing values
+    if (!$form_state['values']['table']) {
+      form_set_error('date', 'Please choose a resource.');
+    }
+  } else if (!empty($form_state['page_num']) && $form_state['page_num'] == 6 && $form_state['values']['op'] != 'Back') { // allow back even if missing values
+    if (!$form_state['values']['user_email']) {
+      form_set_error('user_email', 'Please enter an email address.');
+    }
+    if ($form_state['values']['pnumber'] == 0) {
+      form_set_error('pnumber', 'Please choose the number of persons in your group.');
+    }
+    if ($form_state['values']['res_length'] == 0) {
+      form_set_error('res_length', 'Please enter the duration of your reservation.');
+    }
+//    if (!$form_state['values']['user_dept']) {
+//      form_set_error('user_dept', 'Please enter the Department or Major associated with this request.');
+//    }
+
+  }
+}
+/**********************************************************************************************************/
+/*** END Master validation function for the Powell-Res form ***************************************************/
+/**********************************************************************************************************/
+
+
+
+/***********************************************************************************/
+/*** Research Commons Reservation Module *******************************************/
+/***********************************************************************************/
+/**
+ * Implements hook_menu()..
+ * Implements hook_menu().
+ * Implements hook_menu().
+ *
+ * Set up calls to drupal_get_form() for all our example cases.
+ */
+function powell_res_menu() {
+
+////  global $powell_res_get_user_category;
+  $items = array();
+  $items['reservations/powell'] = array(
+    'title' => 'Powell Resource Reservations',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('powell_res_form_page_one'),
+    'access callback' => TRUE,
+    'menu_name' => 'navigation',
+  );
+  $items['reservations/powell-logout'] = array(
+    'title' => 'Powell Resource Reservations Logout',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('powell_res_logout_handler_submit'),
+    'access callback' => TRUE,
+    'menu_name' => 'navigation',
+  );
+  return $items;
+}
+
+/**
+ * Create a form to add an entry, ......................................................................................................................
+ * Create a form to add an entry, ......................................................................................................................
+ * Create a form to add an entry, ......................................................................................................................
+ */
+
+
+/**
+* page 1 - Welcome ......................................................................................................................
+* page 1 - Welcome ......................................................................................................................
+* page 1 - Welcome ......................................................................................................................
+ */
+function powell_res_form_page_one($form, &$form_state) {
+
+  $GLOBALS['conf']['cache'] = FALSE; // keep pages out of cache for Shibboleth to work
+  global $user;
+  $powell_user = user_load($user->uid, $reset = TRUE);
+  session_variable_set('powell-res','powell_user',$powell_user);
+  session_variable_set('powell-res','outOfRange', 0); // this is used in page 4 and set in the page 4 handler
+
+  $ucla_locale = "powell";
+  session_variable_set('powell-res','ucla_locale',$ucla_locale);
+
+  // web services development server
+//  $dev_host_resource_base = 'http://webservices-dev.library.ucla.edu'; // normally use https (this line) but https is not currently working (20130401, 20130514, )
+
+  // web services production server
+  $dev_host_resource_base = 'https://webservices.library.ucla.edu'; // normally use https (this line) but https is not currently working (20130401, 20130514, )
+
+  session_variable_set('powell-res','dev_host_resource_base',$dev_host_resource_base);
+
+  // set this below when no resources are available for the user specified time; use it in the form validation above
+  session_variable_set('powell-res','noResources', 0);
+
+
+// debug print for wrong user at top of page. save until we are sure the wrong user problem is solved
+//print_r($user_powell->uid);
+//if ( !empty($_SERVER['SHIBUCLAUNIVERSITYID']) ) {
+//  print_r(': >>>'.$_SERVER['SHIBUCLAUNIVERSITYID'].'<<<');
+//} else{
+//  print_r(': >>>EMPTY $_SERVER[SHIBUCLAUNIVERSITYID]<<<');
+//}
+//krumo($_SERVER);
+
+
+  // Jump to appropriate page if necessary
+  // Jump to appropriate page if necessary
+  // Jump to appropriate page if necessary
+
+  // Display page 2 if $form_state['page_num'] == 2
+  if (!empty($form_state['page_num']) && $form_state['page_num'] == 2) {
+    //print_r('page_2');
+    return powell_res_form_page_two($form, $form_state);
+  }
+  elseif (!empty($form_state['page_num']) && $form_state['page_num'] == 3) {
+    //print_r('page_3');
+    return powell_res_form_page_three($form, $form_state);
+  }
+  elseif (!empty($form_state['page_num']) && $form_state['page_num'] == 4) {
+    //print_r('page_4a');
+    return powell_res_form_page_four($form, $form_state);
+  }
+  elseif (!empty($form_state['page_num']) && $form_state['page_num'] == 5) {
+    //print_r('page_5');
+    return powell_res_form_page_five($form, $form_state);
+  }
+  elseif (!empty($form_state['page_num']) && $form_state['page_num'] == 6) {
+    //print_r('page_6');
+    return powell_res_form_page_six($form, $form_state);
+  }
+  elseif (!empty($form_state['page_num']) && $form_state['page_num'] == 7) {
+    //print_r('page_7');
+    return powell_res_form_page_seven($form, $form_state);
+  }
+
+  // Otherwise we build page 1.
+  // Otherwise we build page 1.
+  // Otherwise we build page 1.
+
+  session_variable_set('powell-res','no_res_available',0);
+  session_variable_set('powell-res','reservation_was_deleted', 0); // this is used in page 3 and set in the page 3 delete handler
+
+  //retrieve user first and last name from the $user_powell->field_user_full_name that was set on Shibboleth login
+  if (!empty($powell_user->field_user_full_name['und'][0]['value'])){
+    if (preg_match("/\|\|\|/", $powell_user->field_user_full_name['und'][0]['value'])) {
+      $names = explode("|||", $powell_user->field_user_full_name['und'][0]['value']);
+      session_variable_set('powell-res','name_first', $names[0]);
+      session_variable_set('powell-res','name_last', $names[1]);
+    }else{
+      $names = explode(", ", $powell_user->field_user_full_name['und'][0]['value']);
+      session_variable_set('powell-res','name_last', $names[0]);
+      session_variable_set('powell-res','name_first', $names[1]);
+    }
+  }else{
+    $names = explode("|||", "Name|||unavailable");
+    session_variable_set('powell-res','name_first', $names[0]);
+    session_variable_set('powell-res','name_last', $names[1]);
+  }
+
+  // build form for page
+  //  $form_state['page_num'] = 1;
+  $form = array();
+
+  $form['description'] = array(
+    '#type'  => 'item',
+    '#no-cache'  => TRUE,
+    '#title' => t('Welcome '.ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>UCLA students, faculty and staff may reserve group study spaces for groups of two or more people. UCLA Bruincard must be presented in order to claim a reservation.'),
+  );
+
+//  Save this, it is usefull when testing
+//  $form['test'] = array(
+//    '#type'  => 'checkboxes',
+//    '#options' => drupal_map_assoc(  array( t('Test - checking this checkbox allows deletion of an expired reservation before 24 hours has passed') )  ),
+//  );
+
+  $form['next'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Start'),
+    '#submit' => array('powell_res_form_page_one_handler_submit'),
+  );
+  return $form;
+}
+
+
+/**
+ * page 2 - Reservation Type ......................................................................................................................
+ * page 2 - Reservation Type ......................................................................................................................
+ * page 2 - Reservation Type ......................................................................................................................
+ */
+function powell_res_form_page_two($form, &$form_state) {
+  // Build page 2.
+  // Build page 2.
+  // Build page 2.
+
+  $form = array();
+
+  $form['reservation_type'] = array(
+    '#type' => 'radios',
+    '#options' => array(
+      'studyroom_or_pod'   => t('Reserve a Group Study Room or Collaboration Pod.'),
+      'classroom_or_alcove_or_multi' => t('Reserve a Classroom or Alcove, or reserve multiple spaces at the same time.'),
+    ),
+    '#title' => t('Start your Reservation'),
+  );
+
+  $form['submit'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Next'),
+    '#submit' => array('powell_res_form_page_two_handler_submit'),
+  );
+  return $form;
+}
+
+
+/**
+ * page 3 - Your Reservations ......................................................................................................................
+ * page 3 - Your Reservations ......................................................................................................................
+ * page 3 - Your Reservations ......................................................................................................................
+ */
+function powell_res_form_page_three($form, &$form_state) {
+  $GLOBALS['conf']['cache']=FALSE;
+  global $user_powell;
+  session_variable_set('powell-res','firstAccess4', 0);
+  session_variable_set('powell-res','powell_res_get_user_category', 'undergraduate'); // default
+
+  // save for debugging shibboleth
+  //drupal_set_message(t("User category: " . session_variable_get('powell-res','powell_res_get_user_category') ));
+  //drupal_set_message(t("User ID: " . session_variable_get('powell-res','working_uid') ));
+
+  // Jump to appropriate page if necessary
+  // Jump to appropriate page if necessary
+  // Jump to appropriate page if necessary
+
+  // Improvement needed: improve this to work on a shibboleth system with a matching user. ie both shib user and drupal user, possibly with same username
+  // retrieve the UCLA UID (not drupal uid)
+
+  if ( !empty($_SERVER['SHIBUCLAUNIVERSITYID']) ) {
+    $working_uid = $_SERVER['SHIBUCLAUNIVERSITYID'];
+    //print_r($_SERVER['SHIBUCLAUNIVERSITYID']);
+  } else if ( !empty($_SERVER['HTTP_HOST']) ) { //dhc: temporary to allow operation on non-shib workstation
+    if ( $_SERVER['HTTP_HOST']=='localhost' ) {
+      $working_uid = '502673598';
+      //print_r($_SERVER['HTTP_HOST']);
+      //print_r($working_uid);
+    }
+  } else {
+       //print_r('Unable to login.'); // Improvement needed; error handling needed here
+  }
+
+//  if ( $user_powell->name == "darrowco" ) {
+//     $working_uid = '502673598'; // insert darrowco's uid if drupal user darrowco is running this code on a non-shibboleth workstation
+//   }else{
+//     $working_uid = $user_powell->name;
+//   }
+
+  session_variable_set('powell-res','working_uid', $working_uid);
+
+  // get user category here
+  $powell_res_get_user_category = powell_res_get_user_category($working_uid);
+  $powell_res_get_user_category = 'Undergraduate'; // temporary override of the true user category to allow powell to have one set of business rules for all categories
+  session_variable_set('powell-res','powell_res_get_user_category', $powell_res_get_user_category);
+
+  // TEMP FOR TESTING
+  // session_variable_set('powell-res','powell_res_get_user_category', 'undergraduate');
+  // session_variable_set('powell-res','powell_res_get_user_category', 'graduate');
+  // session_variable_set('powell-res','powell_res_get_user_category', 'staff');
+  // END TEMP FOR TESTING
+
+  // translate Voyager terms to match local terms
+  if( preg_match("/undergraduate/i", $powell_res_get_user_category) ) {
+    $powell_res_get_user_category = 'Undergraduate';
+  } else if( preg_match("/graduate/i", $powell_res_get_user_category) ) {
+    $powell_res_get_user_category = 'Graduate';
+  } else if( preg_match("/staff/i", $powell_res_get_user_category) ) {
+    $powell_res_get_user_category = 'UCLA Staff';
+  } else if( preg_match("/faculty/i", $powell_res_get_user_category) ) {
+    $powell_res_get_user_category = 'UCLA Staff';
+  } else if( preg_match("/academic/i", $powell_res_get_user_category) ) {
+    $powell_res_get_user_category = 'UCLA Staff';
+  }
+  session_variable_set('powell-res','powell_res_get_user_category', $powell_res_get_user_category);
+
+  // get category rules here
+  $powell_res_get_user_rules = powell_res_get_user_rules($powell_res_get_user_category);
+  session_variable_set('powell-res','powell_res_get_user_rules', $powell_res_get_user_rules);
+
+  // retrieve the policy rules previously saved in the rules table
+  $my_kvar = session_variable_get('powell-res','powell_res_get_user_rules');
+
+  // get the number of items the current category of user is allowed to reserve into the future - typically either 1 or 3
+  $my_advance = $my_kvar[0]['cls_adv'];
+  $my_resv_lim = $my_kvar[0]['time_per'];
+  $my_fresv_max = $my_resv_lim;
+  // convert hours to days
+  $my_advance_days = $my_advance/24;
+  $my_advance_seconds = $my_advance*3600;
+
+  // build string for setting the date for the earliest time that a new reservation may be made
+  $earliest_new_reservation_inc = ' +'.$my_advance_days.' day';
+
+//  $my_fresv_max = $my_advance/$my_resv_lim;
+
+  // get the current date/time of the DrupalTest server
+  $nowDate = strtotime("now");
+  $earliest_new_reservation = strtotime("now".$earliest_new_reservation_inc); //dhc_change move this to just before needing it so that it is set at the time the user clicks on a button dhcdhcdhc
+  $startDatePast = array();
+  $startDateFuture = array();
+  $startDateLatest = array();
+
+  // read any reservations given a UID
+  $rows = array();
+  $rows = powell_res_get_user_reservations($working_uid);
+
+  // set header for the form
+  $header = array
+  (
+    'title' => t('Name'),
+    'startDate' => t('Start'),
+    'endDate' => t('End'),
+  );
+
+  // Initialize an empty array for the row(s) of reservations just returned from the Resource Scheduler db
+  $options = array();
+ 
+  // Use this in the tableselect to set the initial values for the radio buttons
+  $values = array();
+  $lcnt = 0;
+  $startDateFutureCnt = 0;
+  $startDatePastCnt = 0;
+
+  // check to verify that at least on row was obtained
+  $deleteFlag = 0;
+  $waitFlag = 0;
+  $waitFlagOnly = 0;
+
+  // Set defaults to enable the form displayed to the user
+  $myRow = 1;
+  $myDelete = 1;
+  $myNext = 1;
+  $myMax = 0;
+  $myMaxFuture = 0;
+  $myMaxPast = 0;
+
+  // if at least one row was returned, loop through each row  
+  // if at least one row was returned, loop through each row  
+  // if at least one row was returned, loop through each row  
+  if (!empty($rows['reservation'])) {
+    foreach($rows['reservation'] as $row) {
+      // each element of the array is keyed with the lcnt
+      $options[$lcnt]['title'] = $row['title'];
+      $options[$lcnt]['roomName'] = $row['roomName']; // longer more detailed description
+
+      // dhc; complete date is needed for the zones calc to work (around line 800-900)
+      $rowStartDate = date('D\, g:ia n/j/Y',strtotime($row['startDate'])); // format date
+      $options[$lcnt]['startDate'] = $rowStartDate;
+      $rowEndDate = date('D\, g:ia n/j/Y',strtotime($row['endDate'])); // format date
+      $options[$lcnt]['endDate'] = $rowEndDate;
+      $options[$lcnt]['schedID'] = $row['schedID'];
+      // set the initial vals for the radio buttons
+      $values[$lcnt] = 0;
+      // keep count of number of rows
+      $lcnt += 1;
+
+      // save any expired reservation; only one should exist and it should be within the last 24 hours (detection of expired reservation and period in which to detect is set in the web services call)
+      $curRowDate = strtotime($row['startDate']);
+
+  // dhc - temp if temp checkbox on first page is checked, disregard rules
+  if (empty($form_state['input']['test']['Test - checking this checkbox allows deletion of an expired reservation before 24 hours has passed'])){
+
+	///// START: business rule processing
+	///// START: business rule processing
+	///// START: business rule processing
+	if( $curRowDate > $nowDate){
+	  $startDateFuture = $curRowDate;
+	  $startDateFutureCnt += 1;
+	  if( $startDatePastCnt > 0 ){
+	    if( $my_resv_lim == 1 ){
+	      if( $startDatePastCnt > 1 ){
+		print_r('ERROR - call Darrow Cole at Library IT 310-206-5565');
+	      } else {
+//		$myRow = 1;
+		$myDelete = 1;
+		$myNext = 0;
+		$myMaxFuture = 1;
+		$earliest_new_reservation_lim1 = $curRowDate;
+	      }
+	    } else if( $lcnt < $my_resv_lim ){
+	      $myRow = 0; // note: build $myRow[] array if the rules change so that more than one item can be in the expired list
+	      $myDelete = 1;
+	      $myNext = 1;
+	    } else if( $lcnt >= $my_resv_lim ){
+//	      $myRow = 1;
+	      $myDelete = 1;
+	      $myNext = 0;
+	      $myMax = 1;
+	    }
+	  } else {
+	    if( $my_resv_lim == 1 ){
+	      $myRow = 1;
+	      $myDelete = 1;
+	      $myNext = 0;
+	      $myMaxFuture = 1;
+	      $earliest_new_reservation_lim1 = $curRowDate;
+//	      $earliest_new_reservation_lim1 = $curRowDate + $my_advance_seconds;
+	    } else if( $lcnt < $my_resv_lim ){
+//	      $myRow = 1;
+	      $myDelete = 1;
+	      $myNext = 1;
+	    } else if( $lcnt >= $my_resv_lim ){
+//	      $myRow = 1;
+	      $myDelete = 1;
+	      $myNext = 0;
+	      $myMax = 1;
+	    }
+	  }
+	} else if( $curRowDate <= $nowDate){
+	  $startDatePast = $curRowDate;
+	  $startDatePastCnt += 1;
+	  if( $startDateFutureCnt > 0 ){
+	    if( $my_resv_lim == 1 ){
+		print_r('ERROR - call Darrow Cole at Library IT 310-206-5565');
+	    } else if( $lcnt < $my_resv_lim ){
+//	      $myRow = 1;
+	      $myDelete = 1;
+	      $myNext = 1;
+	    } else if( $lcnt >= $my_resv_lim ){
+//	      $myRow = 1;
+	      $myDelete = 1;
+	      $myNext = 0;
+	    }
+	  } else {
+	    if( $my_resv_lim == 1 ){
+	      $myRow = 0;
+	      $myDelete = 0;
+	      $myNext = 1;
+	      $myMax = 0;
+	      $earliest_new_reservation_lim1 = $nowDate + $my_advance_seconds;
+	    } else if( $lcnt < $my_resv_lim ){
+	      $myRow = 0;
+	      $myDelete = 0;
+	      $myNext = 1;
+	    } else if( $lcnt >= $my_resv_lim ){
+	      $myRow = 0;
+	      $myDelete = 0;
+	      $myNext = 0;
+	      $myMax = 1;
+	    }
+	  }
+	}
+	// END: business rules processing
+	// END: business rules processing
+	// END: business rules processing
+      }
+  //dhc - END: development checkbox
+    }
+  }
+  // END: if at least one row was returned, loop through each row  
+  // END: if at least one row was returned, loop through each row  
+  // END: if at least one row was returned, loop through each row  
+
+  // save data for any current reservations
+  session_variable_set('powell-res','options', $options);
+
+  $earliest_new_reservationDisplay = date('g:ia \o\n l jS F Y', $earliest_new_reservation); // now +24 hours in seconds
+  session_variable_set('powell-res','earliest_new_reservation', $earliest_new_reservation);  // used on page 4
+
+  // used to prevent rendering of the delete button if there are no existing reservations
+  if(!$options){
+    $sub_delete = FALSE;
+  } else {
+    $sub_delete = TRUE;
+  }
+
+  session_variable_set('powell-res','lcnt', $lcnt);
+// Improvement needed: cannot seem to pass a hidden variable to the delete handler?? use global for now
+//  // save number of items on reserve to use later in delete handler; see bug http://qa.drupal.org/pifr/test/281743
+//  $form['myHidden']['lcnt'] = array(
+//    '#type' => 'hidden',
+//    '#value' => $lcnt,
+//  );
+
+  // this builds the rows with checkboxes
+  $form['myselector12'] = array
+  (
+    '#type' => 'tableselect',
+    '#title' => 'My Selector12',
+    '#id' => 'form_p312p',
+    '#header' => $header,
+    '#options' => $options,
+    '#default_value' => $values,
+//    '#values' => $values,
+    '#empty' => t('<center>No existing reservations</center>'),
+  );
+
+  // this disables row(s)
+  // if the business rules indicate that the user is not allowed to make a new reservation, or delete an old reservation, at this time, remove the option to delete any old reservations
+  if( $myRow == 0 ){
+    $form['myselector12'][0]['#disabled'] = true; // disable the row
+    $form['submit'] = array(); // remove delete button array to prevent display of the delete button
+  }
+
+  $reservation_was_deleted = session_variable_get('powell-res','reservation_was_deleted'); // this is used in page 3 and set in the page 3 delete handler
+  if( $reservation_was_deleted == 1 ){
+    $form['description4'] = array
+    (
+      '#type'  => 'item',
+      '#markup' => t('<font color=red>Reservation(s) deleted</font>'),
+    );
+  } else {
+    $form['description4'] = array();
+  }
+
+  if( $myDelete == 1 ){
+    // create delete button to delete existing reservation(s) from Resource Scheduler by calling a web service from the handler
+    $form['submit'] = array
+    (
+      '#type' => 'submit',
+      '#value' => t('Delete'),
+      '#submit' => array('powell_res_form_page_three_delete_handler_submit'),
+      '#access' => $sub_delete,
+    );
+  }
+  
+  // build the main part of the form
+  $form_p3_main = array();
+
+  // Improvement needed: what is a better way to dothis??? Repeating most of an array for just a text difference seems wasteful
+
+  $form_p3_main = array(
+
+    // breadcrumbs (hardcoded for now)
+    $form['description'] = array
+    (
+      '#type'  => 'item',
+      '#markup' => t(ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;
+( <a href="powell-logout">logout</a> )
+<br>
+<B>Your Reservations</B> > Date & Time > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;
+<br><br>
+<b>Reservation Policies</b><br>
+<b>
+<ul>
+<li>up to two hours long
+<li>up to twenty-four hours in advance
+<li>all reservation start times must be at least twenty-four hours apart
+</ul></b>
+'),
+    ),
+
+    // main array
+    $form['myselector12'],
+    $form['description4'],
+    $form['submit'],
+  );
+
+
+  // check for maxed out reservations, add a "reservations are at a max" message to the form if necessary
+  if (!empty($options)){
+    $earliest_new_reservation_lim_gt_1 = strtotime($options[0]['startDate'])+24*3600;
+  }
+
+  $form_p3_maxed = array();
+  if( ($myMax==1) && ($my_resv_lim>1) ){
+    $form_p3_maxed = array(
+      $form['description'] = array
+      (
+	'#type'  => 'item',
+	'#title' => t('Only '.$my_resv_lim.' Reservation(s) allowed per '.$my_advance_days.' days - To make a new reservation please first delete an existing reservation or try again after '.date('g:ia \o\n l jS F Y',$earliest_new_reservation_lim_gt_1)),
+      ),
+    );
+  }else  if( ($myMaxFuture==1) && ($my_resv_lim==1) ){ // NOTE: this is currently hardcoded for the undergraduate case, it needs to be expanded to handle all cases; fixed now?
+    $form_p3_maxed = array(
+      $form['description'] = array
+      (
+	'#type'  => 'item',
+	'#title' => t('Only '.$my_resv_lim.' Reservation(s) allowed per 24 hours - You may create a new reservation on or after '.date('g:ia \o\n l jS F Y',$earliest_new_reservation_lim1)),
+      ),
+    );
+  }
+
+  // add the submit button, disable if reservations are at a max
+  $form_p3_submit = array();
+
+    // disable the submit button if this test is true
+    if( $myNext == 0 ){
+      $form_p3_submit = array(
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Create a new reservation'),
+	  '#submit' => array('powell_res_form_page_three_handler_submit'),
+	  '#disabled' => TRUE,
+	),
+      );
+    } else if( sizeof($options)>0 && $myDelete==1 ) {
+      $form_p3_submit = array(
+	$form['description'] = array(
+	  '#type'  => 'item',
+	  '#title' => t('&nbsp;&nbsp;or'),
+	),
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Create a new reservation'),
+	  '#submit' => array('powell_res_form_page_three_handler_submit'),
+	  '#disabled' => FALSE,
+	),
+      );
+    } else if( sizeof($options)>0 && $myDelete==0 ) {
+      $form_p3_submit = array(
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Create a new reservation'),
+	  '#submit' => array('powell_res_form_page_three_handler_submit'),
+	  '#disabled' => FALSE,
+	),
+      );
+    }else{
+      $form_p3_submit = array(
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => t('Create a new reservation'),
+	  '#submit' => array('powell_res_form_page_three_handler_submit'),
+	  '#disabled' => FALSE,
+	),
+      );
+    }
+
+  // assemble the various form arrays into one array
+  $form_p3 = array();
+  $form_p3 = $form_p3_main;
+  $form_p3[] = $form_p3_maxed;
+  $form_p3[] = $form_p3_submit;
+//  $form_p3[] = $form;
+
+  // assemble the above arrays
+  $page_array = array();
+  foreach ($form_p3 as $key => $item) {
+    $page_array[$key]['#description'] = $key;
+//    $page_array[$key]['hr'] = array('#markup' => '<hr/>');
+    $page_array[$key]['rendered'] = array($item);
+  }
+  //  return $page_array;
+  return $page_array;
+}
+
+/**
+ * page 4 - Date & Time ......................................................................................................................
+ * page 4 - Date & Time ......................................................................................................................
+ * page 4 - Date & Time ......................................................................................................................
+ */
+function powell_res_form_page_four($form, &$form_state) {
+  $GLOBALS['conf']['cache']=FALSE;
+  $no_res_available = session_variable_get('powell-res','no_res_available');
+  $my_kvar = session_variable_get('powell-res','powell_res_get_user_rules');
+
+  // get the number of items the current category of user is allowed to reserve into the future - typically either 1 or 3
+  $my_resv_lim = $my_kvar[0]['time_per'];
+
+  if (!empty($form_state['page_values'][4])) {
+    $form_state['values'] = $form_state['page_values'][4];
+    $default_date_time = $form_state['values']['date'];
+  } else {
+    $default_date_time = date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']);
+    $default_date_time_min = date("i", $_SERVER['REQUEST_TIME']);
+    $default_date_time_min = (int)$default_date_time_min;
+    if($default_date_time_min <= 15 ){
+      $default_date_time_min = 29; // 1 minute less to allow reservation at a particular time
+      $string = $default_date_time;
+      $pattern = '/:\d\d:/';
+      $replacement = ':'.$default_date_time_min.':';
+      $default_date_time = preg_replace($pattern, $replacement, $string);
+    } else if($default_date_time_min >= 30 && $default_date_time_min <= 45){
+      $default_date_time_min = 59; // 1 minute less to allow reservation at a particular time
+      $string = $default_date_time;
+      $pattern = '/:\d\d:/';
+      $replacement = ':'.$default_date_time_min.':';
+      $default_date_time = preg_replace($pattern, $replacement, $string);
+    }
+  }
+
+  $form = array();
+  $userDate = session_variable_get('powell-res','userDate');
+  $userDateTime = $userDate;
+  $earliest_new_reservation = session_variable_get('powell-res','earliest_new_reservation');
+
+  // round up to the nearest 1/2/hour
+  if ( !empty($earliest_new_reservation) ) {
+    // round the zone times up to the next 1/2 hour
+    $mod_minute = $earliest_new_reservation % 3600;
+    if( $mod_minute < 1800 ){
+      $earliest_new_reservation = $earliest_new_reservation - $mod_minute + 1800;
+    } else {
+      $earliest_new_reservation = $earliest_new_reservation - $mod_minute + 3600;
+    }
+  }
+
+  // convert to old style to work under php 5.2.x that is running on the Production servers
+  $old_date_timestamp = strtotime($earliest_new_reservation);
+  $earliest_new_reservation_time = date('g:ia', $earliest_new_reservation);
+  $earliest_new_reservation_time_date = date('g:ia \o\n l jS F Y', $earliest_new_reservation);
+
+  $nowDate = strtotime("now");
+  $maxDate = strtotime("now");
+  $nowDateDisplay = date('g:ia \o\n l jS F Y', $nowDate);
+
+  $earliest_new_reservationDisplay = date('g:ia \o\n l jS F Y', $earliest_new_reservation);
+
+  // dhc here: check undergrad pulling $my_resv_lim from business rules
+
+
+  // UNDERGRAD SECTION
+  if ( $my_resv_lim == 1 ){
+    $maxDate = strtotime("now".' +1 day');
+
+    $zone[0] = strtotime("now");
+    $zone[1] = strtotime("now".' +1 day');
+    session_variable_set('powell-res','zone',$zone);
+
+  if( $userDateTime > $earliest_new_reservation){
+    $form['description'] = array
+    (
+      '#type'  => 'item',
+      '#markup' => t(ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+<br>
+Your Reservations > <b>Date & Time</b> > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;<br>
+<b>Please choose a start time within the next 24 hours</b><br>
+(before ').$earliest_new_reservation_time_date.')<br> that occurs during building hours: <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">Powell hours</a>.<br>'
+    );
+  }else if( $userDateTime < $nowDate){
+    $form['description'] = array
+    (
+      '#type'  => 'item',
+      '#markup' => t(ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+<br>
+Your Reservations > <b>Date & Time</b> > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;<br>
+<b>Please choose a start time within the next 24 hours</b><br>
+(between now and ').$earliest_new_reservation_time_date.') that occurs during building hours: <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">Powell hours.</a><br>'
+    );
+  }else{
+    $form['description'] = array
+    (
+      '#type'  => 'item',
+      '#markup' => t(ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+<br>
+Your Reservations > <b>Date & Time</b> > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;<br>
+		      <BR>
+		      Start your reservation within the next 24 hours<BR>
+		      <BR>
+		      <b>Start before ').$earliest_new_reservation_time.' tomorrow</b> ('.$earliest_new_reservation_time_date.') and during building hours: <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">Powell hours</a>.<br>'
+    );
+  }
+
+
+  // GRADUATE, STAFF SECTION
+  } else {
+//  } else if ( $my_resv_lim > 1 ){
+
+  // calculate legal reservation zones based on any existing reservations in the n-24 to n+168 interval
+  $nm1 = 0;
+  $zcnt = 0;
+  $existing_resv = session_variable_get('powell-res','lcnt');
+  $options = session_variable_get('powell-res','options');
+
+  // if no reservation exists
+  if( $existing_resv == 0 ){
+    $zone[0] = strtotime("now");
+    $zone[1] = strtotime("now".' +'.$my_resv_lim.' day');
+    $maxDate = $zone[1];
+
+  // else if one or more than one reservation exists and they are in the past and future OR just in the future
+  } else {
+    // calculate zones time within which a reservation can be made
+    $j=-1; // set starting point for zones array // oops, this should start at 3 if one existing resv, 5 if two existing resv, 7 if three existing resv, etc. This number equals (2*$existing_resv)+1 so use that value
+    //$i = (2*$existing_resv)+1; // value is incremented before first use so drop the +1
+    //$i = (2*$existing_resv);
+
+    if ( strtotime("now") <= (strtotime($options[0]['startDate'])-(24*3600)) ){
+      $zone[$j+=1] = strtotime("now");
+      $zone[$j+=1] = strtotime($options[0]['startDate'])-(24*3600);
+    }
+    for ($i=0; $i+1<$existing_resv; $i++){
+      if( (strtotime($options[$i+1]['startDate'])-(24*3600)) >= (strtotime($options[$i]['startDate'])+(24*3600))) {
+	if( strtotime("now") <= (strtotime($options[$i]['startDate'])+(24*3600))) {
+	  $zone[$j+=1] = strtotime($options[$i]['startDate'])+(24*3600);
+	  $zone[$j+=1] = strtotime($options[$i+1]['startDate'])-(24*3600);
+	}
+	else if( strtotime("now") <= (strtotime($options[$i+1]['startDate'])-(24*3600))) {
+	  $zone[$j+=1] = strtotime("now");
+	  $zone[$j+=1] = strtotime($options[$i+1]['startDate'])-(24*3600);
+	}
+      }
+    }
+    if( (strtotime($options[$i]['startDate'])+(24*3600)) <= (strtotime("now".' +'.$my_resv_lim.' day')) ) {
+      if ( strtotime("now") <= (strtotime($options[$i]['startDate'])+(24*3600)) ){
+	$zone[$j+=1] = strtotime($options[$i]['startDate'])+(24*3600);
+	$zone[$j+=1] = strtotime("now".' +'.$my_resv_lim.' day');
+      }
+      else if( (strtotime("now")) <= (strtotime("now".' +'.$my_resv_lim.' day')) ) {
+	$zone[$j+=1] = strtotime("now");
+	$zone[$j+=1] = strtotime("now".' +'.$my_resv_lim.' day');
+      }
+    }
+    // END - calculate zones time within which a reservation can be made  
+  }
+  } // else if ( $my_resv_lim > 1 )
+  // save the zones for use in the handler
+  session_variable_set('powell-res','zone',$zone);
+
+  // print out ranges for the user
+  $zonePoints = sizeof( $zone );
+
+  $i = 0;
+  $zoneRange = '';
+  while ($i < $zonePoints) {
+    if ( !empty($zone[$i]) ) {
+      // round the zone times up to the next 1/2 hour
+      $mod_minute = $zone[$i] % 3600;
+      if( $mod_minute < 1800 && $mod_minute > 0 ){
+	$zone[$i] = $zone[$i] - $mod_minute + 1800;
+      } else if( $mod_minute < 3600 && $mod_minute >= 1800 ) {
+	$zone[$i] = $zone[$i] - $mod_minute + 3600;
+      }
+
+      $mod_minute = $zone[$i+1] % 3600;
+      if( $mod_minute < 1800 && $mod_minute > 0 ){
+	$zone[$i+1] = $zone[$i+1] - $mod_minute + 1800;
+      } else if( $mod_minute < 3600 && $mod_minute >= 1800 ) {
+	$zone[$i+1] = $zone[$i+1] - $mod_minute + 3600;
+      }
+
+      $zoneRangeNew = date('l\, n\/j g:i A', $zone[$i]).' --- '.date('l\, n\/j  g:i A', $zone[$i+1]).'<br>';
+    }
+//    $zoneRangeNew = date('g:ia D m/d/y', $zone[$i]).' --- '.date('g:ia D m/d/y', $zone[$i+1]).'<br>';
+    $zoneRange = $zoneRange.$zoneRangeNew;
+    $i+=2;
+  }
+
+  $firstAccess4 = session_variable_get('powell-res','firstAccess4');
+  $no_res_available = session_variable_get('powell-res','no_res_available');
+  $outOfRange = session_variable_get('powell-res','outOfRange'); // this is used in page 4 and set in the page 4 handler
+
+  if( $no_res_available == 1 ){
+    session_variable_set('powell-res','no_res_available',0);
+
+form_set_error('', 'There are no reservations available at the time you chose, please choose a different start time.<br>
+Also, please make the reservation during hours of operation. See <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">College Library hours</a>.');
+
+    $zones = ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+Your Reservations > <b>Date & Time</b> > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;<br>
+		      <br>
+		      Start date/time must fall within this range:<br>
+		      <b>'
+		      .$zoneRange.'</b>
+		      <br>and occur during building hours: <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">College Library hours</a><br>
+		      <br><br>
+		      <b>Enter start date/time:</b>';
+  } else if( $outOfRange == 1 ) {
+    session_variable_set('powell-res','no_res_available',0);
+
+form_set_error('', 'Please choose a start time in one of the following time slot(s)<br>(reservations can be no more than '.$my_resv_lim.' day(s) into the future and must be at least 24 hours from any existing reservations.)<br>
+Also, please make the reservation during hours of operation. See <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">College Library hours</a>.');
+
+    $zones = ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+Your Reservations > <b>Date & Time</b> > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;<br>
+		      <br>
+		      Start date/time must fall within this range:<br>
+		      <b>'
+		      .$zoneRange.'</b>
+		      <br>and occur during building hours: <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">College Library hours</a><br>
+		      <br><br>
+		      <b>Enter start date/time:</b>';
+  } else if( $firstAccess4 == 0 ) {
+    $zones = ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+Your Reservations > <b>Date & Time</b> > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;<br>
+		      <br>
+		      Start date/time must fall within this range:<br>
+		      <b>'
+		      .$zoneRange.'</b>
+		      <br>and occur during building hours:<br>
+		      <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">College Library hours</a><br>
+		      <br><br>
+		      <b>Enter start date/time:</b>';
+session_variable_set('powell-res','firstAccess4', 1);
+  } else if( $firstAccess4 > 0 ) {
+
+form_set_error('', 'Please choose a start time in one of the following time slot(s)<br>(reservations can be no more than '.$my_resv_lim.' day(s) into the future and must be at least 24 hours from any existing reservations.)<br>
+Also, please make the reservation during hours of operation. See <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">College Library hours</a>.)');
+
+    $zones = ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+Your Reservations > <b>Date & Time</b> > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;<br>
+		      <br>
+		      Start date/time must fall within this range:<br>
+		      <b>'
+		      .$zoneRange.'</b>
+		      <br>and occur during building hours: <a href="http://www.library.ucla.edu/about/college-library-hours" target="_new">College Library hours</a><br>
+		      <br><br>
+		      <b>Enter start date/time:</b>';
+  }
+
+  if (!empty($zoneRange)) {
+//  if( $userDateTime > $earliest_new_reservation){
+    $form['description'] = array
+    (
+      '#type'  => 'item',
+      '#markup' => t($zones)
+    );
+  }else if( $userDateTime < $nowDate){
+    $form['description'] = array
+    (
+      '#type'  => 'item',
+      '#markup' => t(ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+Your Reservations > <b>Date & Time</b> > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;<br>
+		      <b>Please choose a start time within the next 24 hours</b><br>
+		      (between now and ').$earliest_new_reservation_time_date.')'
+    );
+  }else{
+    $form['description'] = array
+    (
+      '#type'  => 'item',
+      '#markup' => t(ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+Your Reservations > <b>Date & Time</b> > Available Resources > Details > Finish &nbsp;&nbsp;&nbsp;<br>
+		      Start your reservation within the next 24 hours<BR>
+		      <BR>
+		      <b>Start before ').$earliest_new_reservation_time.' tomorrow</b> ('.$earliest_new_reservation_time_date.')'
+    );
+  }
+//  } // else if ( $my_resv_lim > 1 )
+
+  session_variable_set('powell-res','maxDate', $maxDate);
+
+  // set the time to appear in the dropdown menu: today's date and starting at midnight, e.g. $dropTime = '2013-03-26 00:00:00';
+  $dropTime = date('Y-m-d', strtotime("now"));
+  $dropTime = $dropTime.' 00:00:00';
+
+  $form['date'] = array(
+    '#type' => 'date_popup', // Provided by the date_popup module
+    '#default_value' => $dropTime,
+    '#date_format' => 'Y-m-d h:i A', // Uses the PHP date() format - http://php.net/manual/en/function.date.php
+    '#date_year_range' => '0:+0.1', // Limits the year range to the next two upcoming years
+    '#date_increment' => 30,
+    '#required' => TRUE,
+    '#date_label_position' => 'above',
+  );
+
+
+  $form['back3'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Back'),
+    '#submit' => array('powell_res_form_page_fourb_handler_submit'),
+  );
+
+  $form['submit'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Next'),
+    '#submit' => array('powell_res_form_page_four_handler_submit'),
+  );
+  return $form;
+} 
+
+/**
+ * page 5 - Available Resources ......................................................................................................................
+ * page 5 - Available Resources ......................................................................................................................
+ * page 5 - Available Resources ......................................................................................................................
+ */
+function powell_res_form_page_five($form, &$form_state) {
+  if (!empty($form_state['page_values'][5])) {
+    $form_state['values'] = $form_state['page_values'][5];
+  }
+
+  $form = array();
+
+  // read reervations given an UID (currently simulated in drupal)
+  $rows = array();
+  $rows = powell_res_get_resources_for_period_complete($form, $form_state);
+  $header = array
+  (
+    'title' => t('Name'),
+//    'start' => t('Start'),
+//    'end' => t('End'),
+    'duration' => t('Max hours'),
+    'capacity' => t('Capacity'),
+    'description' => t('Additional Info'),
+  );
+
+  // Initialize an empty array
+  $options = array();
+  // Next, loop through the $users array
+  $lcnt = 0;
+
+  if ($rows != "Not Found" && $rows != NULL) {
+  foreach($rows as $row)
+    {
+      $lcnt += 1;
+      $o_index = $row['resources'][0]['id'].':::'.$row['start'].':::'.$row['end'].':::'.$row['resources'][0]['capacity'].':::'.$row['resources'][0]['title'].':::'.$row['resources'][0]['description'].':::'.$row['duration'];
+      $o_key[$lcnt-1] = $o_index;
+      $options[$o_index] = array // each element of the array is keyed with the PID
+      (
+//	'sorter' => $row['resources'][0]['title'], // 'start_time' was the key used in the header
+	'title' => $row['resources'][0]['title'], // 'start_date' was the key used in the header
+//	'start' => $row['start'], // 'start_date' was the key used in the header
+//	'end' => $row['end'], // 'start_date' was the key used in the header
+	'duration' => $row['duration'], // duration during which the resource is available
+	'capacity' => $row['resources'][0]['capacity'], // 'start_time' was the key used in the header
+	'description' => $row['resources'][0]['description'], // 'start_date' was the key used in the header
+      );
+    }
+  }
+
+  $demos0 = array();
+
+  if ($rows != "Not Found" && $rows != NULL) {
+    $dtimedate = $rows[0]['start']; // get start time from value(s) returned from the web service call
+    $dtime = preg_match( '/\d\d\d\d/', $dtimedate, $tyear ); // extract the numerical year
+    $dtime = preg_match( '/-\d\d-/', $dtimedate, $tmonth ); // extract the numerical month
+    $dtime = preg_match( '/\d\d/', $tmonth[0], $tmonth );
+    $dtime = preg_match( '/-\d\d /', $dtimedate, $tday ); // extract the numerical day
+    $dtime = preg_match( '/\d\d/', $tday[0], $tday );
+    $dtime = preg_match( '/\d\d:/', $dtimedate, $thour ); // extract the numerical hour
+    $dtime = preg_match( '/\d\d/', $thour[0], $thour );
+    $dtime = preg_match( '/:\d\d/', $dtimedate, $tminute ); // extract the numerical minute
+    $dtime = preg_match( '/\d\d/', $tminute[0], $tminute );
+    $dtime = preg_match( '/.M/', $dtimedate, $apm ); // extract AM or PM
+    // Convert to 24hr time for the date()
+    $apms = strtolower($apm[0]);
+    if( $apms == 'pm'){
+      $thour[0] = $thour[0] + 12;
+    }
+  
+    $ddyear = date("Y", mktime(0, 0, 0, $tmonth[0], $tday[0], $tyear[0]));  // use date() to allow formatting of year. "Y" yields 2012
+    $ddmonth = date("M", mktime(0, 0, 0, $tmonth[0], $tday[0], $tyear[0]));  // use date() to allow formatting of month. "M" yields Jan through Dec
+    $ddmonth2 = date("F", mktime(0, 0, 0, $tmonth[0], $tday[0], $tyear[0]));  // use date() to allow formatting of month. "M" yields Jan through Dec
+    $ddday = date("jS", mktime(0, 0, 0, $tmonth[0], $tday[0], $tyear[0]));  // use date() to allow formatting of day. "j" yields 1 through 31 with no leading 0
+    $dddow = date("l", mktime(0, 0, 0, $tmonth[0], $tday[0], $tyear[0]));  // use date() to allow formatting of Day of Week. "D" Monday through Sunday
+    $ddhourmin = date("g:ia", mktime($thour[0], $tminute[0], 0, $tmonth[0], $tday[0], $tyear[0]));  // use date() to allow formatting of Day of Week. "D" Monday through Sunday
+    $ddtime = preg_replace( '/\d\d\d\d-\d\d-\d\d/', '', $dtimedate );  // extract start time from value(s) returned from the web service call
+
+    // display back time chosen by user
+    $available_resources = $ddhourmin.t(' on '.$dddow.', '.$ddmonth2.' '.$ddday);
+    // save for use on subsequent pages
+    session_variable_set('powell-res','available_resources', $available_resources);
+
+  $demos0 = array(
+
+    $form['description'] = array
+    (
+      '#type'  => 'item',
+      '#markup' => t(ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+Your Reservations > Date & Time > <B>Available Resources</B> > Details > Finish &nbsp;&nbsp;&nbsp;'),
+    ),
+
+    $form['description2'] = array
+    (
+      '#type'  => 'item',
+      '#title' => t('Available Resources at ').$available_resources,
+    ),
+
+    $form['table'] = array
+    (
+      '#id' => 'formformform2',
+      '#type' => 'tableselect',
+      '#header' => $header,
+      '#options' => $options,
+      '#multiple' => FALSE,
+      '#empty' => t('<center>No available resources found</center>'),
+      '#default_value' => isset($form_state['values']['table']) ? $form_state['values']['table'] : NULL,
+    ),
+
+    $form['back4'] = array(
+      '#type'  => 'submit',
+      '#value' => t('Back'),
+      '#submit' => array('powell_res_form_page_fiveb_handler_submit'),
+    ),
+
+    $form['submit'] = array
+    (
+      '#type' => 'submit',
+      '#value' => t('Reserve selected resource'),
+      '#submit' => array('powell_res_form_page_five_handler_submit'),
+    ),
+  );
+
+  } else { // else there are no rows
+
+  session_variable_set('powell-res','noResources', 1);
+  $form_state['page_num'] = 4;
+  $form_state['rebuild'] = TRUE;
+
+  $demos0 = array(
+    $form['description'] = array
+    (
+      '#type'  => 'item',
+      '#title' => t('Available Resources:'),
+    ),
+
+    $form['table'] = array
+    (
+      '#id' => 'formformform2',
+      '#type' => 'tableselect',
+      '#header' => $header,
+      '#options' => $options,
+      '#multiple' => FALSE,
+      '#empty' => t('<center>No available resources found</center>'),
+    ),
+
+    $form['submit2'] = array
+    (
+      '#type' => 'submit',
+      '#value' => t('Change Date and Time'),
+      '#submit' => array('powell_res_form_page_five_empty_handler_submit'),
+    ),
+  );
+  }
+  return $form;
+}
+
+/**
+ * page 6 - Details ......................................................................................................................
+ * page 6 - Details ......................................................................................................................
+ * page 6 - Details ......................................................................................................................
+ */
+function powell_res_form_page_six($form, &$form_state) {
+  if (!empty($form_state['page_values'][6])) {
+    $form_state['values'] = $form_state['page_values'][6];
+  }
+
+  // retrieve selection details
+  $delimiter = ':::';
+  $string = $form_state['page_values'][5]['table'];
+  $sub_array = explode ( $delimiter, $string );
+  $rrid = $sub_array[0];
+  $rstart = $sub_array[1];
+  $rend_oem = $sub_array[2]; // use later to compare $rend with $rstart+$res_length???
+  $rcapacity = $sub_array[3];
+  $rtitle = $sub_array[4];
+  $rdescription = $sub_array[5];
+  $rhours_available = $sub_array[6];
+
+  // Build the capacity numbers for the dropdown menu
+  $roomCapacity = array();
+  $roomCapacity[0] = 'Choose';
+  $i = 2;
+  while( $i <= $rcapacity){
+    $roomCapacity[$i] = $i;
+    $i++;
+  }
+
+  // build the hours available numbers for the dropdown menu based on max available and user category
+  // retrieve user details
+  $my_kvar = session_variable_get('powell-res','powell_res_get_user_rules');
+
+  // get the max reservation length allowed to the user
+  $my_cls_lim = $my_kvar[0]['cls_lim']; // from the rules table for the group of which the user is a member (grad or undergrad)
+  $my_gsr_lim = $my_kvar[0]['gsr_lim']; // from the rules table for the group of which the user is a member (grad or undergrad)
+  $my_pod_lim = $my_kvar[0]['pod_lim']; // from the rules table for the group of which the user is a member (grad or undergrad)
+
+  // convert limit from Resource Scheduler into minutes
+  $rhours_available = $rhours_available * 60;
+
+  $ucla_locale = session_variable_get('powell-res','ucla_locale');
+if( $ucla_locale == 'powell'){
+
+    if( $my_pod_lim < $rhours_available ){
+      $myLim = $my_pod_lim;
+    } else {
+      $myLim = $rhours_available;
+    }
+
+} else {
+  if (preg_match("/Group/i", $rtitle)) {
+  } else if (preg_match("/Classroom/i", $rtitle)) {
+  } else  { // use pod if nothing else matches
+    if( $my_pod_lim < $rhours_available ){
+      $myLim = $my_pod_lim;
+    } else {
+      $myLim = $rhours_available;
+    }
+  }
+}
+
+  // Improvement needed: change this to an unlimited list using mod and ?
+  if( $myLim >= 240 ){
+    $resLength[0] = 'Choose';
+    $resLength[60] = '1 hours';
+    $resLength[90] = '1 1/2 hours';
+    $resLength[120] = '2 hours';
+    $resLength[150] = '2 1/2 hours';
+    $resLength[180] = '3 hours';
+    $resLength[210] = '3 1/2 hours';
+    $resLength[240] = '4 hours';
+  } else  if( $myLim >= 210 ) {
+    $resLength[0] = 'Choose';
+    $resLength[60] = '1 hours';
+    $resLength[90] = '1 1/2 hours';
+    $resLength[120] = '2 hours';
+    $resLength[150] = '2 1/2 hours';
+    $resLength[180] = '3 hours';
+    $resLength[210] = '3 1/2 hours';
+  } else  if( $myLim >= 180 ) {
+    $resLength[0] = 'Choose';
+    $resLength[60] = '1 hours';
+    $resLength[90] = '1 1/2 hours';
+    $resLength[120] = '2 hours';
+    $resLength[150] = '2 1/2 hours';
+    $resLength[180] = '3 hours';
+  } else  if( $myLim >= 150 ) {
+    $resLength[0] = 'Choose';
+    $resLength[60] = '1 hours';
+    $resLength[90] = '1 1/2 hours';
+    $resLength[120] = '2 hours';
+    $resLength[150] = '2 1/2 hours';
+  } else  if( $myLim >= 120 ) {
+    $resLength[0] = 'Choose';
+    $resLength[60] = '1 hours';
+    $resLength[90] = '1 1/2 hours';
+    $resLength[120] = '2 hours';
+  } else  if( $myLim >= 120 ) {
+    $resLength[0] = 'Choose';
+    $resLength[60] = '1 hours';
+    $resLength[90] = '1 1/2 hours';
+    $resLength[120] = '2 hours';
+  } else  if( $myLim >= 90 ) {
+    $resLength[0] = 'Choose';
+    $resLength[60] = '1 hours';
+    $resLength[90] = '1 1/2 hours';
+  } else {
+    $resLength[0] = 'Choose';
+    $resLength[60] = '1 hours';
+  }
+
+  $form = array();
+  $form['description'] = array
+  (
+    '#type'  => 'item',
+    '#markup' => t(ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+Your Reservations > Date & Time > Available Resources > <B>Details</B> > Finish &nbsp;&nbsp;&nbsp;'),
+  );
+
+  $available_resources = session_variable_get('powell-res','available_resources');
+  $form['description2'] = array
+  (
+    '#type'  => 'item',
+    '#title' => t('Your selected Resource --- <em>'.session_variable_get('powell-res','rtitle').'</em> --- will be reserved at ').$available_resources,
+    '#markup' => t('<br>An email confirmation containing all details will be sent to you after you confirm this page.'),
+  );
+
+  $powell_user = session_variable_get('powell-res','powell_user');  
+  $my_email = $powell_user->mail;
+
+  $form['user_email'] = array(
+    '#type'  => 'textfield',
+    '#title' => t('Email'),
+    '#size'  => 45,
+    '#default_value' => isset($my_email) ? $my_email : NULL,
+  );
+
+ $form['pnumber'] = array(
+    '#title' => t('Group size'),
+    '#type' => 'select',
+    '#options' => $roomCapacity,
+    '#default_value' => 'Choose',
+  );
+
+  $form['res_length'] = array(
+    '#title' => t('Duration'),
+    '#type' => 'select',
+    '#options' => $resLength,
+    '#default_value' => 'Choose',
+  );
+
+//  $form['user_dept'] = array(
+//    '#type'  => 'textfield',
+//    '#title' => t('Department / Major'),
+//    '#size'  => 45,
+//    '#default_value' => isset($form_state['values']['user_dept']) ? $form_state['values']['user_dept'] : NULL,
+//  );
+
+  $form['back5'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Back'),
+    '#submit' => array('powell_res_form_page_sixb_handler_submit'),
+  );
+
+  $form['submit'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Confirm'),
+    '#submit' => array('powell_res_form_page_six_handler_submit'),
+  );
+
+  return $form;
+}
+
+/**
+ * page 7 - Finish ......................................................................................................................
+ * page 7 - Finish ......................................................................................................................
+ * page 7 - Finish ......................................................................................................................
+ */
+function powell_res_form_page_seven($form, &$form_state) {
+global $user_powell;
+
+  // email must exist to get to this point
+  $powell_user = session_variable_get('powell-res','powell_user');  
+  $my_email = $powell_user->mail;
+
+$working_uid = session_variable_get('powell-res','working_uid');
+  $str_create = array(
+    'description' => 'Powell-Res',
+    'start' => '2012-12-25 02:00 PM',
+    'end' => '2012-12-25 02:30 PM',
+    'pending' => true,
+    'numberOfAttendees' => 3,
+    'email' => 'darrowco@library.ucla.edu',
+    'phone' => '310-206-5565',
+    'firstName' => 'Darrow',
+    'lastName' => 'Cole',
+    'academicDept' => 'Other',
+    'academicDeptOther' => 'Education',
+    'division' => 'Staff',
+    'courseLevel' => 'Meeting',
+    'srs' => '111222333',
+    'computerUse' => 'No',
+    'internalNotes' => 'Testing web service, I will delete',
+    'uid' => '502673598',
+  );
+
+  $delimiter = ':::';
+  $string = $form_state['page_values'][5]['table'];
+  $sub_array = explode ( $delimiter, $string );
+  $rrid = $sub_array[0];
+
+  // use this resource id for testing; find a time it is currently reserves to test error return: 400
+  // $rrid = '225';
+
+  $rstart = $sub_array[1];
+  $rend_oem = $sub_array[2]; // use later to compare $rend with $rstart+$res_length???
+  $rcapacity = $sub_array[3];
+  $rtitle = $sub_array[4];
+  $rdescription = $sub_array[5];
+  // get the length of the reservation //dhc this needs to be generic for any length
+  $res_length = $form_state['page_values'][6]['res_length'];
+  if ( $res_length == 60 ) {
+    $res_length = 3600;
+  } else if ( $res_length == 90 ) {
+    $res_length = 5400;
+  } else if ( $res_length == 120 ) {
+    $res_length = 7200;
+  } else if ( $res_length == 150 ) {
+    $res_length = 9000;
+  } else if ( $res_length == 180 ) {
+    $res_length = 10800;
+  } else if ( $res_length == 210 ) {
+    $res_length = 12600;
+  } else if ( $res_length == 240 ) {
+    $res_length = 14400;
+  } else {
+    $res_length = 3600;
+  }
+
+  $rend = date('Y-m-d h:i A', strtotime($rstart)+$res_length);
+  $rcap = $sub_array[3];
+  $rcap = $form_state['page_values'][6]['pnumber'];
+//  $ufname = $form_state['page_values'][1]['user_name'];
+//  $ulname = $form_state['page_values'][1]['user_pwd'];
+  $uemail = $form_state['page_values'][6]['user_email'];
+//  $udept = $form_state['page_values'][6]['user_dept'];
+  $course_level = 0;
+
+  // Improvement needed: 
+  $str_create1 = array(
+    'description' => 'Powell-Res',
+    'start' => $rstart,
+    'end' => $rend,
+    'pending' => true,
+    'numberOfAttendees' => $rcap,
+    'email' => $uemail,
+    'phone' => '310-206-5565',
+    'firstName' => session_variable_get('powell-res','name_first'),
+    'lastName' => session_variable_get('powell-res','name_last'),
+//    'academicDept' => $udept,
+    'academicDeptOther' => 'Education',
+    'division' => 'Staff',
+    'courseLevel' => $course_level,
+    'srs' => '111222333',
+    'computerUse' => 'No',
+    'internalNotes' => 'Powell Reservation',
+    'uid' => $working_uid,
+  );
+
+// test array for conflicting reservation test
+//  $str_create1 = array(
+//    'description' => 'testing ',
+//    'start' => '2013-04-24 05:30 PM',
+//    'end' => '2013-04-24 06:30 PM',
+//    'pending' => true,
+//    'numberOfAttendees' => '2',
+//    'email' => 'darrowco@library.ucla.edu',
+//    'phone' => '310-206-5565',
+//    'firstName' => 'darrow',
+//    'lastName' => 'cole',
+//    'academicDept' => 'DIIT',
+//    'academicDeptOther' => 'Education',
+//    'division' => 'Staff',
+//    'courseLevel' => 0,
+//    'srs' => '111222333',
+//    'computerUse' => 'No',
+//    'internalNotes' => 'Testing web service, I will delete',
+//    'uid' => '502673598',
+////    'uid' => '603513612',
+//  );
+
+  // create the new reservation
+  $response = array();
+  $response = powell_res_set_user_reservations($rrid, $str_create1);
+
+  // send a confirmation email
+  $dDate = 0;
+  $mySpace = '';
+  // re-read the user's reservations to catch anything new
+  $rows = powell_res_get_user_reservations($working_uid);
+  // if at least one row was returned, loop through each row  
+  if (!empty($rows['reservation'])) {
+    // set the email content, spacing and cr/lf effect the email layout
+    if( $preg_match_ret = preg_match("/400/", $response->code) ){
+      $body = '
+<br>Sorry, your reservation could not be completed. Someone may have reserved the space you wanted. Please click on the <i>Change reservation</i> button and try a different date/time and/or resource.<br>
+<br>
+Current Reservation(s):
+<b></b>';
+    } else {
+      $u_rstart=strtotime($rstart); // use to pick put the new reservation below
+      foreach($rows['reservation'] as $row) {
+	// each element of the array is keyed with the lcnt
+	$startDate = strtotime($row['startDate']);
+	if( $u_rstart == $startDate ){
+	  $endDate = strtotime($row['endDate']);
+	  $newRoomName = $row['title'];
+	  $newStartDate = date('l, F j \a\t g:ia',$startDate);
+	  $newEndDate = date('l, F j \a\t g:ia',$endDate);
+	}
+      }
+      $body = '
+<br>You have successfully reserved <em>'.$newRoomName.'</em> from <em>'.$newStartDate.'</em> to <em>'.$newEndDate.'</em>. Please bring your current Bruincard to the CLICC Desk in the Powell Library to claim your reservation. You can only claim your reservation from fifteen minutes before until fifteen minutes after the beginning of your reservation. Unclaimed reservations will be canceled.
+<b></b>';
+    }
+
+
+    foreach($rows['reservation'] as $row) {
+      // each element of the array is keyed with the lcnt
+      $roomName = 'Reservation for: '.$row['title'].'<br>';
+//      $roomName = $row['roomName'];
+      $startDate = strtotime($row['startDate']);
+      $endDate = strtotime($row['endDate']);
+      $schedID = $row['schedID'];
+      $dDate = ($endDate-$startDate)/3600;
+      if( $u_rstart == $startDate ){
+	$body = $body.'
+'.'<br><br>'.$mySpace.'
+'.'<b>'.$roomName.'
+'.'   Date/Time: '.date('g:ia \o\n l jS F Y',$startDate).'<br>'.'
+'.'   Duration: '.$dDate.' hour(s)</b>
+<b></b>
+';
+      } else {
+	$body = $body.'
+'.'<br><br>'.$mySpace.'
+'.''.$roomName.'
+'.'   Date/Time: '.date('g:ia \o\n l jS F Y',$startDate).'<br>'.'
+'.'   Duration:'.$dDate.' hour(s)
+<b></b>
+';
+      }
+    }
+  } else if( $preg_match_ret = preg_match("/400/", $response->code) ){
+      $body = '
+<br>Sorry, your reservation could not be completed. Someone may have reserved the space you wanted. Please click on the <i>Change reservation</i> button and try a different date/time and/or resource.<br>
+<br>
+Current Reservation(s):<br>
+No existing reservations
+<b></b>';
+  }
+  $to = $uemail;
+  $from = 'no-reply@library.ucla.edu';
+  // If you are using suhosin (the hardened PHP extension) and want to use
+  // Cc or Bcc, then make sure that suhosin.mail.protect is not set to 2,
+  // or the mail will be rejected as an attack.
+  $header_bcc = '';
+  $header_cc = '';
+  $subject = 'Research Commons Reservation Confirmation';
+  // you can set 'message_key' to any key you want, and process
+  // that in the hook_mail as shown in the commented out code.
+  // Or, just set it to some string and ignore it as we are here.
+  // You can add extra headers into the headers array here.  If you
+  // are trying to send an HTML formatted email, please use either
+  // the MIME Mail or HTMLMail modules, rather than doing it
+  // by just setting the Content-Type.
+
+
+  // If you are using suhosin (the hardened PHP extension) and want to use
+  // Cc or Bcc, then make sure that suhosin.mail.protect is not set to 2,
+  // or the mail will be rejected as an attack.
+  $header_bcc = '';
+  $header_cc = '';
+  // you can set 'message_key' to any key you want, and process
+  // that in the hook_mail as shown in the commented out code.
+  // Or, just set it to some string and ignore it as we are here.
+  // You can add extra headers into the headers array here.  If you
+  // are trying to send an HTML formatted email, please use either
+  // the MIME Mail or HTMLMail modules, rather than doing it
+  // by just setting the Content-Type.
+
+$email_body = $body;
+$module = 'powell_res';
+$key = 'message_key';
+$lang = user_preferred_language($user_powell);
+$params = array(
+  'body' => $body,
+  'subject' => $subject,
+  );
+
+$body = array();
+$body[] = $email_body;
+$mail_message = drupal_mail($module, $key, $to, $lang, $params, $from, FALSE);
+$mail_message['subject'] = $subject;
+$mail_message['body'] = $body;
+
+$mail_system = drupal_mail_system($module, $key);
+$mail_message = $mail_system->format($mail_message);
+
+$mail_message['result'] = $mail_system->mail($mail_message);
+
+
+
+//  $message = drupal_mail('powell_res', 'message_key', $to, user_preferred_language($user_powell), array('body' => $body, 'subject' => $subject, 'headers' => array('Cc' => $header_cc, 'Bcc' => $header_bcc)), $from, TRUE);
+  // You can check $message['result'] to see if the message sent successfully.
+
+  $form = array();
+  $form['description'] = array
+  (
+    '#type'  => 'item',
+    '#markup' => t(ucfirst(session_variable_get('powell-res','name_first')).' '.ucfirst(session_variable_get('powell-res','name_last')).'&nbsp;( <a href="powell-logout">logout</a> )<br><br>
+Your Reservations > Date & Time > Available Resources > Details > <B>Finish</B> &nbsp;&nbsp;&nbsp;<br>'.$email_body),
+  );
+
+  // Show the change button only whenthe reservation failed on submit
+  if (preg_match("/400/", $response->code)) {
+    $form['submit'] = array(
+      '#type'  => 'submit',
+      '#value' => t('Change reservation'),
+      '#submit' => array('powell_res_form_page_seven_handler_submit'),
+    );
+  } else {
+    $form['view'] = array(
+      '#type'  => 'submit',
+      '#value' => t('Go back to start to View or Edit Reservation(s)'),
+      '#submit' => array('powell_res_form_page_seven_handler_submit'),
+    );
+
+
+  $email_sent_to = '<br>An email confirmation containing all details has been sent to: '.$my_email.'.';
+
+
+  $form['description3'] = array
+  (
+    '#type'  => 'item',
+    '#markup' => t($email_sent_to),
+  );
+
+  }
+  return $form;
+}
+/**
+ * End of form -------------------------------------------------------------------------------------------------------
+ * End of form -------------------------------------------------------------------------------------------------------
+ * End of form -------------------------------------------------------------------------------------------------------
+ */
+
+/**
+ * Logout submit handler
+ * Logout submit handler
+ * Logout submit handler
+ *
+ * Logout from both Drupal and Shibboleth
+ */
+  // Values are saved for each page.
+  // to carry forward to subsequent pages in the form.
+  // The Forms API rebuilds the form.
+function powell_res_logout_handler_submit($form, &$form_state) {
+  session_destroy();
+  drupal_goto(variable_get('shib_auth_full_logout_url'));
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Page 1 submit handler.
+ * Page 1 submit handler.
+ * Page 1 submit handler.
+ *
+ * Save the vals from page one for a later final submit.
+ */
+  // Values are saved for each page.
+  // to carry forward to subsequent pages in the form.
+  // The Forms API rebuilds the form.
+function powell_res_form_page_one_handler_submit($form, &$form_state) {
+  $form_state['page_values'][1] = $form_state['values'];
+
+  // set page num if it does not yet exist, ie this is the first pass
+  if (empty($form_state['page_num'])) { $form_state['page_num'] = 1; } 
+
+  // UPDATE: skip page 2 and go to page 3 per committee decision, save page 2 in case it is needed in the future
+  // else go forward to page 2
+  $form_state['page_num'] = 3;
+
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Page 2 submit handler.
+ * Page 2 submit handler.
+ * Page 2 submit handler.
+ *
+ * Save the vals from page two for a later final submit.
+ */
+function powell_res_form_page_two_handler_submit($form, &$form_state) {
+  $form_state['page_values'][2] = $form_state['values'];
+
+  if (!empty($form_state['page_values'][3])) {
+    $form_state['values'] = $form_state['page_values'][3];
+  }
+
+  // When form rebuilds in n+2 or so, use this to determine which page to build.
+  $form_state['page_num'] = 3;
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Page 3 submit handler.
+ * Page 3 submit handler.
+ * Page 3 submit handler.
+ *
+ * Save the vals from page three for a later final submit.
+ */
+function powell_res_form_page_three_handler_submit($form, &$form_state) {
+  $form_state['page_values'][3] = $form_state['values'];
+
+  // zero out any previous choice by the user
+  $userDate = array();
+  session_variable_set('powell-res','userDate', $userDate);
+
+  if (!empty($form_state['page_values'][4])) {
+    $form_state['values'] = $form_state['page_values'][4];
+  }
+
+  // When form rebuilds in n+2 or so, use this to determine which page to build.
+  $form_state['page_num'] = 4;
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Page 3 delete handler.
+ * Page 3 delete handler.
+ * Page 3 delete handler.
+ *
+ * Save the vals from page three for a later final submit.
+ */
+function powell_res_form_page_three_delete_handler_submit($form, &$form_state) {
+  // Values are saved for each page.
+  // to carry forward to subsequent pages in the form.
+  // The Forms API rebuilds the form.
+    // delete any rows with set checkboxes from previous page
+    foreach ($form_state['values'][0] as $pid_del) {
+      // tableselect sets the checkbox vals to strings 0,1,2,... but to integer 0 if not selected so for element 0,
+      //  the val is int 0 if not selected, string 0 if selected, the others are autoconverted
+      if( ($pid_del == '0' && is_string($pid_del)) || $pid_del > 0 ){
+	$working_rid = $form_state['complete form'][1]['rendered'][0]['#options'][$pid_del]['schedID'];
+	$dev_host_resource_base = session_variable_get('powell-res','dev_host_resource_base');
+	$url_stack = "$dev_host_resource_base"."/rcres/reservation/release/" . "$working_rid";
+	//$url_stack = "http://webservices.library.ucla.edu/rcres/reservation/release/" . "$working_rid";
+	$url = $url_stack;
+	$response = drupal_http_request($url,
+	  array(
+	    'method' => 'DELETE',
+	    'headers' => array('Pragma" => "no-cache', 'Cache-Control' => 'no-cache'),
+	  )
+	);
+	if( $response->status_message == 'OK' ){
+	  session_variable_set('powell-res','reservation_was_deleted', 1); // this is used in page 3 and set in the page 3 delete handler
+	} else {
+	  session_variable_set('powell-res','reservation_was_deleted', 0); // this is used in page 3 and set in the page 3 delete handler
+	}
+      }
+    }
+
+    $llcnt = 5;
+
+    for ($i=0; $i<$llcnt; $i++){
+      $form_state['values'][0][$i] = 0;
+    }
+
+  $form_state['input'][0][0] = NULL;
+  $form_state['input'][0][1] = NULL;
+  $form_state['input'][0][2] = NULL;
+  $form_state['page_values'][3] = $form_state['values']; // no reaseon to save, it only makes the check box sticky which is not desireable when the rows shift up after a deletion
+  // When form rebuilds in n+2 or so, use this to determine which page to build.
+  $form_state['page_num'] = 3;
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Page 4 submit handler.
+ * Page 4 submit handler.
+ * Page 4 submit handler.
+ *
+ * Save the vals from page two for a later final submit.
+ */
+function powell_res_form_page_four_handler_submit($form, &$form_state) {
+  $form_state['page_values'][4] = $form_state['values'];
+  if (!empty($form_state['page_values'][5])) {
+    $form_state['values'] = $form_state['page_values'][5];
+  }
+
+  // get the current time/date from server
+  $nowDate = strtotime("now");
+
+  // get the user's selection
+  $userDate = strtotime($form_state['page_values'][4]['date']);
+
+  // save the zones for use in the handler
+  $zone = session_variable_get('powell-res','zone');
+
+  // print out ranges for the user
+  $zonePoints = sizeof( $zone );
+
+  $i = 0;
+  $outOfRange = 0;
+  $zoneOk = 0;
+  $zoneRange = '';
+  while ($i < $zonePoints) {
+    if (  !empty($zone[$i]) && !empty($zone[$i+1]) && $zoneOk==0  ) {
+      // is the user specified date/time within a zone? Pad the upper limit by 30 minutes because of earlier rounding; eg choosing a 3:30pm resv would fail if the realtime is between 3:00 and 3:30
+      if( !( $userDate>=$zone[$i]&&$userDate<=$zone[$i+1]+1800 ) ){
+	$outOfRange = 1;
+      // is the user specified date/time during operating hours? (simplified for now, need to pull actual hours in the future)
+      } else if( !(( date('G', $userDate)>='8' && date('i', $userDate)>='30' )  ||  ( date('G', $userDate)<='21' && date('i', $userDate)<='30' )) ) {
+	$outOfRange = 1;
+      } else {
+	$outOfRange = 0;
+	$zoneOk = 1;
+      }
+    }
+    $i+=2;
+  }
+
+  $no_res_available = 0;
+  // if the user picked time/date falls within a legal time slot
+  if( $outOfRange == 0 ){
+    session_variable_set('powell-res','outOfRange', $outOfRange);
+
+    // read reervations given an UID (currently simulated in drupal)
+    $rows = array();
+    $rows = powell_res_get_resources_for_period_complete($form, $form_state);
+
+    // if there are no free resources at the time chosen
+    if ( $rows == 'Not Found' ){
+      $no_res_available = 1;
+      session_variable_set('powell-res','no_res_available', $no_res_available);
+    }
+  } else {
+    session_variable_set('powell-res','outOfRange', $outOfRange);
+  }
+
+  // is the user's selection time for a new reservation too early or too close to an existing reservation? Is the too early part covered by the new too close test???
+  if( $outOfRange==1 || $no_res_available==1 ){
+    $form_state['page_num'] = 4;
+    $form_state['rebuild'] = TRUE;
+  } else {
+    // the user's selection is ok, continue on to the next step
+    // When form rebuilds in n+2 or so, use this to determine which page to build.
+    session_variable_set('powell-res','firstAccess4', 0);
+    $form_state['page_num'] = 5;
+    $form_state['rebuild'] = TRUE;
+  }
+}
+
+/**
+ * Page 4 back submit handler.
+ * Page 4 back submit handler.
+ * Page 4 back submit handler.
+ *
+ * Save the vals from page two for a later final submit.
+ */
+function powell_res_form_page_fourb_handler_submit($form, &$form_state) {
+  $form_state['page_values'][4] = $form_state['values'];
+
+  if (!empty($form_state['page_values'][3])) {
+    $form_state['values'] = $form_state['page_values'][3];
+  }
+
+  // When form rebuilds in n+2 or so, use this to determine which page to build.
+  $form_state['page_num'] = 3;
+  $form_state['rebuild'] = TRUE;
+ }
+
+/**
+ * Page 5 submit handler.
+ * Page 5 submit handler.
+ * Page 5 submit handler.
+ *
+ * Save the vals from page five for a later final submit.
+ */
+function powell_res_form_page_five_handler_submit($form, &$form_state) {
+  $form_state['page_values'][5] = $form_state['values'];
+
+  // retrieve selection details
+  $delimiter = ':::';
+  $string = $form_state['complete form']['table']['#value'];
+  $sub_array = explode ( $delimiter, $string );
+  $rrid = $sub_array[0];
+  $rstart = $sub_array[1];
+  $rend_oem = $sub_array[2]; // use later to compare $rend with $rstart+$res_length???
+  $rcapacity = $sub_array[3];
+  $rtitle = $sub_array[4];
+  $rdescription = $sub_array[5];
+  $rhours_available = $sub_array[6];
+  session_variable_set('powell-res','rtitle',$rtitle);
+
+  if (!empty($form_state['page_values'][5]['table'])) {
+    if (!empty($form_state['page_values'][6])) {
+      $form_state['values'] = $form_state['page_values'][6];
+    }
+
+    // When form rebuilds in n+2 or so, use this to determine which page to build.
+    $form_state['page_num'] = 6;
+    $form_state['rebuild'] = TRUE;
+  } else {
+    $form_state['page_num'] = 5;
+    $form_state['rebuild'] = TRUE;
+  }
+ }
+
+/**
+ * Page 5 back submit handler.
+ * Page 5 back submit handler.
+ * Page 5 back submit handler.
+ *
+ * Save the vals from page two for a later final submit.
+ */
+function powell_res_form_page_fiveb_handler_submit($form, &$form_state) {
+  $form_state['page_values'][5] = $form_state['values'];
+
+  if (!empty($form_state['page_values'][4])) {
+    $form_state['values'] = $form_state['page_values'][4];
+  }
+
+  // When form rebuilds in n+2 or so, use this to determine which page to build.
+  $form_state['page_num'] = 4;
+  $form_state['rebuild'] = TRUE;
+ }
+
+/**
+ * Page 5 empty submit handler.
+ * Page 5 empty submit handler.
+ * Page 5 empty submit handler.
+ *
+ * Save the vals from page two for a later final submit.
+ */
+function powell_res_form_page_five_empty_handler_submit($form, &$form_state) {
+  if (!empty($form_state['page_values'][6])) {
+    $form_state['values'] = $form_state['page_values'][6];
+  }
+
+  // When form rebuilds in n+2 or so, use this to determine which page to build.
+  $form_state['page_num'] = 4;
+  $form_state['rebuild'] = TRUE;
+ }
+
+/**
+ * Page 6 submit handler.
+ * Page 6 submit handler.
+ * Page 6 submit handler.
+ *
+ * Save the vals from page two for a later final submit.
+ */
+function powell_res_form_page_six_handler_submit($form, &$form_state) {
+  $form_state['page_values'][6] = $form_state['values'];
+
+  if (!empty($form_state['page_values'][7])) {
+    $form_state['values'] = $form_state['page_values'][7];
+  }
+
+  // When form rebuilds in n+2 or so, use this to determine which page to build.
+  $form_state['page_num'] = 7;
+  $form_state['rebuild'] = TRUE;
+ }
+
+/**
+ * Page 6 back submit handler.
+ * Page 6 back submit handler.
+ * Page 6 back submit handler.
+ *
+ * Save the vals from page two for a later final submit.
+ */
+function powell_res_form_page_sixb_handler_submit($form, &$form_state) {
+  $form_state['page_values'][6] = $form_state['values'];
+
+  if (!empty($form_state['page_values'][5])) {
+    $form_state['values'] = $form_state['page_values'][5];
+  }
+
+  // When form rebuilds in n+2 or so, use this to determine which page to build.
+  $form_state['page_num'] = 5;
+  $form_state['rebuild'] = TRUE;
+ }
+
+/**
+ * Page 7 submit handler.
+ * Page 7 submit handler.
+ * Page 7 submit handler.
+ *
+ * Save the vals from page two for a later final submit.
+ */
+function powell_res_form_page_seven_handler_submit($form, &$form_state) {
+  $form_state['page_values'][7] = $form_state['values'];
+
+  if (preg_match("/View/", $form_state['clicked_button']['#value'])) {
+    $form_state['page_num'] = 3;
+  } else {
+    $form_state['page_num'] = 4;
+  }
+    $form_state['rebuild'] = TRUE;
+  }
+
+/**
+ * get user category from Voyager
+ * get user category from Voyager
+ * get user category from Voyager
+ */
+function powell_res_get_user_category($working_uid) {
+  // get patron status from Voyager
+  $dev_host_resource_base = session_variable_get('powell-res','dev_host_resource_base');
+  $url_stack = "$dev_host_resource_base"."/rcres/patron/group/" . "$working_uid"; // same category source for workstation, drupaltest and production
+  $url = $url_stack . 
+
+  drupal_http_build_query(array());
+  $options = array(
+    "headers" => array(
+        "Pragma" => "no-cache",
+        "Cache-Control" => "no-cache",
+    ),
+  );
+  $response_voy = drupal_http_request($url, $options);
+  $patron_status = $response_voy->data;
+//dsm($patron_status);
+  if (preg_match("/\bUndergraduate\b/ii", $patron_status)) {
+    $patron_status = "Undergraduate";
+  } elseif (preg_match("/\bGraduate\b/ii", $patron_status)) {
+    $patron_status = "Graduate";
+  } elseif (preg_match("/\bFaculty\b/ii", $patron_status)) {
+    $patron_status = "Faculty";
+  }
+//dsm($patron_status);
+  return $patron_status;
+}
+
+/**
+ * get user rules from read rules table in database
+ * get user rules from read rules table in database
+ * get user rules from read rules table in database
+ */
+function powell_res_get_user_rules($user_category) {
+global $user_powell;
+  $uid_from_drupal = 0;
+  // read reervations given an UID (currently simulated in drupal)
+  $entries = array();
+  // select table
+  $select = db_select('powell_res_rules', 'e');
+  // fields to read
+  $select->addField('e', 'cls_lim');
+  $select->addField('e', 'gsr_lim');
+  $select->addField('e', 'pod_lim');
+  $select->addField('e', 'cls_adv');
+  $select->addField('e', 'gsr_adv');
+  $select->addField('e', 'pod_adv');
+  $select->addField('e', 'multi_res');
+  $select->addField('e', 'time_per');
+  $select->addField('e', 'time_unit');
+  $select->addField('e', 'group_verify');
+    // read in only records that match te he current users uid
+  $select->condition('e.user_group', $user_category);
+  // Now, loop all these entries and show them in a table. Note that there is no
+  // db_fetch_* object or array function being called here. Also note that the
+  // following line could have been written as
+  // $entries = $select->execute()->fetchAll() which would return each selected
+  // record as an object instead of an array.
+  $entries = $select->execute()->fetchAll(PDO::FETCH_ASSOC);
+
+  if (!empty($entries)) {
+    $user_rules = $entries;
+  }
+  else {
+    $user_rules = -1;
+  }
+  return $user_rules;
+}
+
+/**
+ * get list of user reservations
+ * get list of user reservations
+ * get list of user reservations
+ */
+function powell_res_get_user_reservations($working_uid) {
+  // get patron status from Voyager
+  $dev_host_resource_base = session_variable_get('powell-res','dev_host_resource_base');
+  $url_stack = "$dev_host_resource_base"."/rcres/currentreservations/for/" . "$working_uid";
+  $url = $url_stack;
+  $test = drupal_http_build_query(array());
+  $options = array(
+    "headers" => array(
+        "Pragma" => "no-cache",
+        "Cache-Control" => "no-cache",
+    ),
+  );
+  $response_voy = drupal_http_request($url, $options);
+  $patron_reservations = $response_voy->data;
+  $patron_reservations_array = drupal_json_decode($patron_reservations, TRUE);
+  return $patron_reservations_array;
+}
+
+/**
+ * get list of available resources at starting time given start date/time
+ * get list of available resources at starting time given start date/time
+ * get list of available resources at starting time given start date/time
+ */
+function powell_res_get_resources_for_period($form, $form_state) {
+  // test and setup string
+  //$request_url = 'http://lit321v-b.library.ucla.edu/rcres/availablerooms/after/2013-01-17+07%3a00+PM/until/96/length/1';
+
+  $ucla_locale = session_variable_get('powell-res','ucla_locale');
+
+  $delimiter = ' ';
+  $string = $form_state['page_values'][4]['date'];
+  $sub_array = explode ( $delimiter, $string );
+  $rdate = $sub_array[0];
+
+  $rtime = $sub_array[1];
+  $rtime12h = date("h", strtotime($rtime));
+  $rtime12m = date("i", strtotime($rtime));
+  $rtime12a = date("a", strtotime($rtime));
+
+  $rlength = 30; // temp, get from rules
+  $rlength =   $rlength/30;
+
+
+  $dev_host_resource_base = session_variable_get('powell-res','dev_host_resource_base');
+  $request_url = '$dev_host_resource_base'.'/rcres/availablerooms/startingat/'."$rdate"."+"."$rtime12h".'%3a'."$rtime12m".'+'."$rtime12a".'/length/'."$rlength".'/where/'."$ucla_locale";
+  $request_headers = array('Content-Type' => 'application/x-www-form-urlencoded');
+  $request_method = 'POST';
+  $data = '';
+  $request_retry = 3;
+  // Send the request.
+  $response_voy = drupal_http_request($request_url, $request_headers, $request_method, $data, $request_retry);
+
+  if ($response_voy->data == "[]" ) {
+    return "Not Found";
+  } else {
+    $patron_reservations = $response_voy->data;
+    $patron_reservations_array = drupal_json_decode($patron_reservations, TRUE);
+
+  //dsm($patron_status);
+    return $patron_reservations_array;
+  }
+}
+
+/**
+ * get list of available resources at starting time given start date/time
+ * get list of available resources at starting time given start date/time
+ * get list of available resources at starting time given start date/time
+ */
+function powell_res_get_resources_for_period_complete($form, $form_state) {
+
+  $ucla_locale = session_variable_get('powell-res','ucla_locale');
+
+  // test and setup string
+  //$request_url = 'http://lit321v-b.library.ucla.edu/rcres/availablerooms/after/2013-01-17+07%3a00+PM/until/96/length/1';
+  $delimiter = ' ';
+  $string = $form_state['page_values'][4]['date'];
+  $sub_array = explode ( $delimiter, $string );
+  $rdate = $sub_array[0];
+
+  $rtime = $sub_array[1];
+  $rtime12h = date("h", strtotime($rtime));
+  $rtime12m = date("i", strtotime($rtime));
+  $rtime12a = date("a", strtotime($rtime));
+
+  $my_kvar = session_variable_get('powell-res','powell_res_get_user_rules');
+  $my_kvar = $my_kvar[0]['pod_lim'];
+  $rlength = $my_kvar/30;
+
+  // this is set at the top; change at the top when releasing to test/production; needs automation
+  $dev_host_resource_base = session_variable_get('powell-res','dev_host_resource_base');
+  $request_url = "$dev_host_resource_base"."/rcres/availablerooms/complete/startingat/"."$rdate"."+"."$rtime12h".'%3a'."$rtime12m".'+'."$rtime12a".'/length/'."$rlength".'/where/'."$ucla_locale";
+  $request_headers = array('Content-Type' => 'application/x-www-form-urlencoded');
+  $request_method = 'POST';
+  $data = '';
+  $request_retry = 3;
+  // Send the request.
+  $response_voy = drupal_http_request($request_url, $request_headers, $request_method, $data, $request_retry);
+
+  if ($response_voy->data == "[]" ) {
+    return "Not Found";
+  } else {
+    $patron_reservations = $response_voy->data;
+    $patron_reservations_array = drupal_json_decode($patron_reservations, TRUE);
+
+  //dsm($patron_status);
+  return $patron_reservations_array;
+  }
+}
+
+/**
+ * set new user reservations
+ * set new user reservations
+ * set new user reservations
+ */
+function powell_res_set_user_reservations($rrid, $str_create1) {
+  $params = array();
+  $params = json_encode($str_create1);
+  $dev_host_resource_base = session_variable_get('powell-res','dev_host_resource_base');
+  $response = drupal_http_request($dev_host_resource_base.'/rcres/reservation/reserveroom/'.$rrid, array(
+    'method' => 'POST',
+    'data' => $params, // see comments below - you may need to change this
+    'headers' => array('Content-Type' => 'application/json')
+  ));
+  return $response;
+}
+
+/**
+ * used for testing of reservation setting
+ * used for testing of reservation setting
+ * used for testing of reservation setting
+ */
+function powell_res_set_user_reservations_0($working_uid) {
+
+  $c_array = array(
+    'description' => 'Powell-Res',
+    'start' => '2012-09-20 08:00 AM',
+    'end' => '2012-09-20 10:00 AM',
+    'pending' => true,
+    'numberOfAttendees' => 2,
+    'email' => 'darrowco@library.ucla.edu',
+    'phone' => '310-206-9780',
+    'firstName' => 'Darrow',
+    'lastName' => 'Cole',
+    'academicDept' => 'Other',
+    'academicDeptOther' => 'Education',
+    'division' => 'Staff',
+    'courseLevel' => 'Meeting',
+    'srs' => '111222333',
+    'computerUse' => 'No',
+    'internalNotes' => 'Testing web service, I will delete',
+    'uid' => '502673598',
+  );
+
+  $params = json_encode($c_array);
+
+  $dev_host_resource_base = session_variable_get('powell-res','dev_host_resource_base');
+  $url_stack = "$dev_host_resource_base"."/rcres/reservation/reserveroom/118"; // same category source for workstation, drupaltest and production
+  $url = $url_stack;
+  $response = drupal_http_request($url, array(
+    'method' => 'POST',
+    'data' => $params, // see comments below - you may need to change this
+    'headers' => array('Content-Type' => 'application/json')
+  ));
+}
+
+/**
+ * session variable functions
+ * session variable functions
+ * session variable functions
+ *
+ * Based on code from Peter Moulding http://petermoulding.com/session_variable
+ */
+function session_variable_check_session()
+	{
+	return session_id() != '';
+	}
+
+function session_variable_check_module($module4sv)
+	{
+	$module_safe = session_variable_safe($module4sv);
+	if($module_safe !== $module4sv or isset($_SESSION[$module4sv]))
+		{
+		return false;
+		}
+	return true;
+	}
+
+function session_variable_delete($module4sv, $name)
+	{
+	if(session_variable_is($module4sv, $name))
+		{
+		$module4sv = session_variable_safe($module4sv);
+		$name = session_variable_safe($name);
+		unset($_SESSION[$module4sv][$name]);
+		if(!count($_SESSION[$module4sv]))
+			{
+			unset($_SESSION[$module4sv]);
+			}
+		return true;
+		}
+	return false;
+	}
+
+function session_variable_is($module4sv, $name)
+	{
+	$module4sv = session_variable_safe($module4sv);
+	$name = session_variable_safe($name);
+	return (isset($_SESSION[$module4sv]) and isset($_SESSION[$module4sv][$name]));
+	}
+
+function session_variable_get($module4sv, $name, $default_value = '')
+	{
+	if(session_variable_is($module4sv, $name))
+		{
+		$module4sv = session_variable_safe($module4sv);
+		$name = session_variable_safe($name);
+		return $_SESSION[$module4sv][$name];
+		}
+	return $default_value;
+	}
+
+function session_variable_set($module4sv, $name, $value = '')
+	{
+	$module4sv = session_variable_safe($module4sv);
+	$name = session_variable_safe($name);
+	$_SESSION[$module4sv][$name] = $value;
+	}
+
+/*
+Is the module name or the variable name safe for use as an entry in the session?
+This function returns a safe version of the name.
+*/
+function session_variable_safe($name = '')
+	{
+	return htmlentities($name);
+	}

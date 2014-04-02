@@ -1,0 +1,201 @@
+<?php	
+/**
+ * @file
+ * Install, update and uninstall functions for the powell_res module.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * In Drupal 7, there is no need to install schema using this hook, the schema
+ * is already installed before this hook is called.
+ *
+ * We will create a default entry in the database.
+ *
+ * @see hook_install()
+ * @ingroup powell_res
+ */
+function powell_res_rules_install() {
+  // Outside of the .install file we would use drupal_write_record() to
+  // populate the database, but it cannot be used here, so we'll use
+  // db_insert().
+
+  // Add a default entry.
+  $fields = array(
+    'user_group'    => 'Graduate',
+    'cls_lim' => 240,
+    'gsr_lim'     => 240,
+    'pod_lim'     => 240,
+    'cls_adv' => 168,
+    'gsr_adv'     => 168,
+    'pod_adv'     => 168,
+    'multi_res'     => "no",
+    'time_per'     => 3,
+    'time_unit'     => 168,
+    'group_verify'     => "yes",
+  );
+  db_insert('powell_res_rules')
+    ->fields($fields)
+    ->execute();
+
+  // Add another entry.
+  $fields = array(
+    'user_group'    => 'Undergraduate',
+    'cls_lim' => 120,
+    'gsr_lim' => 120,
+    'pod_lim' => 120,
+    'cls_adv' => 24,
+    'gsr_adv'     => 24,
+    'pod_adv'     => 24,
+    'multi_res'     => "no",
+    'time_per'     => 1,
+    'time_unit'     => 24,
+    'group_verify'     => "yes",
+    'uid'     => 1,
+  );
+  db_insert('powell_res_rules')
+    ->fields($fields)
+    ->execute();
+
+  // Add another entry.
+  $fields = array(
+    'user_group'    => 'UCLA Staff',
+    'cls_lim' => 240,
+    'gsr_lim'     => 240,
+    'pod_lim'     => 240,
+    'cls_adv' => 168,
+    'gsr_adv'     => 168,
+    'pod_adv'     => 168,
+    'multi_res'     => "no",
+    'time_per'     => 3,
+    'time_unit'     => 168,
+    'group_verify'     => "yes",
+    'uid'     => 2,
+  );
+  db_insert('powell_res_rules')
+    ->fields($fields)
+    ->execute();
+
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * As in hook_install, there is no need to uninstall schema, Drupal will do it
+ * for us.
+ *
+ * @see hook_uninstall()
+ * @ingroup powell_res
+ */
+function powell_res_rules_uninstall() {
+  // nothing.
+}
+
+
+/**
+ * Implements hook_schema().
+ *
+ * Defines the database tables used by this module.
+ * Remember that the easiest way to create the code for hook_schema is with
+ * the @link http://drupal.org/project/schema schema module @endlink
+ *
+ * @see hook_schema()
+ * @ingroup powell_res
+ */
+function powell_res_rules_schema() {
+
+  $schema['powell_res_rules'] = array(
+    'description' => 'Stores business rules for resource allocation of the Research Commons.',
+    'fields' => array(
+      'pid'  => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique rule ID.',
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator user's {users}.uid",
+      ),
+      'user_group' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'User group to which the rule applioes.',
+      ),
+      'cls_lim' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Classroom limit.',
+      ),
+      'gsr_lim' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Group Study Room limit.',
+      ),
+      'pod_lim' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'POD Limit.',
+      ),
+      'cls_adv' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Classroom advance.',
+      ),
+      'gsr_adv' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Group Study Room advance.',
+      ),
+      'pod_adv' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'POD advance.',
+      ),
+      'multi_res' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Multi-Reservations.',
+      ),
+      'time_per' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Limit per time period.',
+      ),
+      'time_unit' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Unit of time for period.',
+      ),
+      'group_verify' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'verify group.',
+      )
+    ),
+    'primary key' => array('pid'),
+    'indexes' => array(
+      'user_group'    => array('user_group'),
+      'cls_lim' => array('cls_lim'),
+      'gsr_lim'     => array('gsr_lim'),
+    ),
+  );
+
+  return $schema;
+}

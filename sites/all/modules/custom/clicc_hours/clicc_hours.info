@@ -1,0 +1,5 @@
+name = CLICC Hours
+description = Display daily hours for various CLICC locations in CLICC sidebar.
+core = 7.x
+version = 7.x-0.1-dev
+package = CLICC modules

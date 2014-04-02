@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function drpage_menu() {
+  $items['service/data-registry-edit/drpage-page'] = array(
+    'page callback' => 'drpage_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function drpage_page() {
+$GLOBALS['conf']['cache'] = FALSE; // keep pages out of cache for Shibboleth to work
+
+$output = '
+<h2>Data Registry&nbsp;</h2>
+<p>Access to this page requires Shibboleth authentication.</p>
+<p><a href="/service/data-registry-edit/add">Add Data Registry Content</a></p>
+<p><a href="/service/data-registry-edit/update-registry">Edit Your Data Registry Entry</a>
+</p><p>&nbsp;</p><h2>Shibboleth Logout</h2>
+<p><a href="https://www-auth.library.ucla.edu/Shibboleth.sso/Logout?return=https://shb.ais.ucla.edu/shibboleth-idp/Logout" target="_blank">Shibboleth Logout</a></p>
+<p>Use the above link to log out of your Shibboleth session.&nbsp;</p>
+<p>&nbsp;</p><p>&nbsp;</p>';
+ 
+  return $output;
+}
+
+
+
+

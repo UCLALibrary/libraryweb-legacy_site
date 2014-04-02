@@ -1,0 +1,104 @@
+<?php
+/**
+ * @file
+ * Defines custom search form allowing user to choose from multiple search targets.
+ */
+
+/**
+ * Define custom search form
+ */
+function ucla_simple_search_custom_form($form, &$form_state) {
+  $form = array();
+  // #form_id apparently set by default from function name but be explicit
+  $form['#form_id'] = 'ucla_simple_search_custom_form';
+
+  // Select (drop-down) list for user to choose where to search
+  $form['search_target'] = array (
+    '#type' => 'select',
+    '#title' => 'Choose one:',
+    '#title_display' => 'invisible',
+    '#options' => array (
+      'site' => 'Web Site Search',
+      'melvyl' => 'Melvyl UC Catalog',
+      'catalog' => 'UCLA Library Catalog',
+      'guides' => 'Research Guides',
+    )
+  );
+
+  $form['search_terms'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#size' => 26,
+    '#maxlength' => 80,
+    '#default_value' => '',
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'OK',
+    '#id' => 'ucla-simple-search-custom-form-submit',
+  );
+
+  return $form;
+}
+
+/**
+ * Handle the form when submitted
+ * Implements FORM_ID_submit(), mentioned in passing at
+ * http://api.drupal.org/api/drupal/developer!topics!forms_api_reference.html/7#submit_property
+ */
+function ucla_simple_search_custom_form_submit($form, &$form_state) {
+  module_load_include('inc', 'ucla_search', 'includes/ucla_search_logger');
+  module_load_include('inc', 'ucla_search', 'includes/ucla_search_handlers');
+
+  // Collect form info
+  $search_target = $form['search_target']['#value'];
+  $search_terms = $form['search_terms']['#value'];
+  $search_date = $_SERVER['REQUEST_TIME'];
+  // If behind varnish, REMOTE_ADDR = IP of the varnish server
+  // and HTTP_X_FORWARDED_FOR = IP of remote user
+  $browser_ip = (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR']);
+  // Use simpler string for search_form in logging table
+  $search_form = 'simple_search';
+
+  // Put form info into array expected by search logger / handlers
+  $search_info = array (
+    'search_target' => $search_target,
+    'search_terms' => $search_terms,
+    'search_date' => $search_date,
+    'browser_ip' => $browser_ip,
+    'search_form' => $search_form,
+  );
+
+  // Log the search info before doing the search
+  ucla_search_log_search($search_info); 
+
+  // Send search info to router, which will do the actual search
+  ucla_search_route_search($search_info);
+}
+
+/**
+ * Implements hook_block_info() to define a new block for the custom form
+ */
+function ucla_simple_search_block_info() {
+  $blocks['ucla_simple_search'] = array(
+    'info' => t('UCLA Custom Search Block'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view() to add the custom form to the new block
+ */
+function ucla_simple_search_block_view( $delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'ucla_simple_search':
+      $block['title'] = 'UCLA Search';
+      $block['content'] = drupal_render(drupal_get_form('ucla_simple_search_custom_form'));
+      break;
+  }
+  return $block;
+}
+

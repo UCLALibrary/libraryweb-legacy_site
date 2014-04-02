@@ -1,0 +1,7 @@
+name = "Menu Aunt Link"
+description = "Provides a block that links to the current page's aunts if it has no children"
+
+core = 7.x
+dependencies[] = menu
+
+files[] = menu_aunt_links.module

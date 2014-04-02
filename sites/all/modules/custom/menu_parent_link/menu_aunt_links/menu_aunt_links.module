@@ -1,0 +1,97 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+ 
+function menu_aunt_links_block_info() {
+  $blocks['menu_aunt_links_main_menu_aunts'] = array(
+    'info' => t('Active page\'s Aunts in main menu'), 
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+ 
+function menu_aunt_links_block_view($delta = '') {
+  $block = array();
+  
+  switch ($delta) {
+      case 'menu_aunt_links_main_menu_aunts':
+        $block['subject'] = NULL;
+        $block['content'] = array(
+          '#markup' => menu_aunt_links_get_aunts(current_path(), 'main-menu'),
+        );
+      break;
+  }
+  return $block;
+}
+
+/*function to display a menu of the current page's aunt links if there are no children*/
+function menu_aunt_links_get_aunts($path, $menu) {
+  
+  //get plid and has_children from active menu item    
+             $query = db_select('menu_links','n');
+             $query 
+                ->condition('link_path',$path)
+                ->condition('menu_name',$menu)
+                ->fields('n',array('has_children','plid','mlid'))
+                ->orderBy('weight','ASC');
+
+                 $active_result = $query->execute();
+                 
+  foreach($active_result as $active_record) {  
+  
+    if(($active_record->has_children == 0) && ($active_record->plid != 0)) {
+    //if the active menu item does not have children but does have a parent, we find the parent's plid and depth
+             $query = db_select('menu_links','l');
+             $query 
+                ->condition('plid',$active_record->plid)
+                ->condition('menu_name',$menu)
+                ->fields('l',array('plid','depth','mlid'))
+                ->orderBy('weight','ASC');
+
+                 $parent_result = $query->execute();
+                 
+      foreach($parent_result as $parent_record) {
+        if($parent_record->plid == 0 && $parent_record->depth == 0) {
+        //if there are no grandparents of the active item, then we return nothing (avoiding duplication of the top-level of main navigation)
+          return NULL;
+        }else{
+          //if the active item has a grand parent, we build a menu tree with the grandparent's children
+              
+             $query = db_select('menu_links','m');
+             $query 
+                ->condition('plid',$active_record->plid)
+                ->condition('menu_name',$menu)
+                ->fields('m',array('mlid','link_title'))
+                ->orderBy('weight','ASC');
+
+                 $items_result = $query->execute();
+     	 
+         $output = '<ul class="menu">';
+         foreach($items_result as $result_item){
+         
+         $menu_item = menu_link_load($result_item->mlid);
+          if($menu_item['access'] = TRUE){
+         $options = array();
+         $attributes = array();
+         $below = array();
+           $output.= theme_menu_link(array('element'=>array('#title' => $menu_item['link_title'], '#href' => $menu_item['link_path'], '#localized_options' => $options, '#attributes' => $attributes, '#below' => $below)));
+              }
+         }
+         $output.= "</ul>";
+         return $output;
+
+        }
+      
+      }  
+      
+      
+    }
+  }
+}

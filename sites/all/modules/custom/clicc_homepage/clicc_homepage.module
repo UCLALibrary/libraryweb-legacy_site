@@ -1,0 +1,353 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+function clicc_homepage_block_info() {
+	$blocks['clicc_homepage'] = array(
+		'info' => t('CLICC_Homepage'),
+		'cache' => DRUPAL_NO_CACHE, // No caching
+		);
+	return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function clicc_homepage_block_view($delta = '') {
+	$block = array();
+	switch ($delta) {
+		case 'clicc_homepage':{
+		$block['subject'] = t('');
+		$block['content'] = clicc_homepage_block_contents($delta);
+			break;
+		}
+	}
+	return $block;
+}
+
+/**
+ * Implements hook_block_contents().
+ */
+function clicc_homepage_block_contents($delta) {
+	
+	// Make sure the page isn't cached since info needs to be live
+	$GLOBALS['conf']['cache'] = false;
+	
+	// Include helper functions
+	include 'clicc_homepage_helper_functions.php';
+	$html = '';
+	// Note: The following is indented/formatted as if it's HTML code so we can clearly see the divisions
+	// There are 3 columns in the homepage, all which are contained within a home container div
+
+	////////////////////
+	/// Home container
+	////////////////////
+
+	$html .= '
+	<div id="home-container">';
+				
+	////////////////////
+	/// Left Column
+	////////////////////
+
+	// Static Content
+	$html .= '
+		<div id="home-left">
+			<img src="/sites/default/files/Left-Home.jpg" align="center">
+			<h2>CLICC Lab/Commons</h2>
+			<h6>145 Powell Library Building</h6>
+			<p>The College Library Instructional Computing Commons (CLICC) offers students 100 workstations, instructional software, printers and helpful staff.</p>
+			<p>The times below display the earliest time you may reserve a spot for Powell study rooms, YRL study rooms, and YRL study pods. Reserve by clicking on the links below.</p>
+			<div id="home-study-room-availability">
+				<h3>Group Study Spaces</h3>';
+	// Powell and YRL Availability dynamic content: Displays whether or not study rooms in Powell and YRL are available
+				$powSchedule = new Schedule("Powell");
+				$pow30 = $powSchedule->nextOpenReservationTarget(1);
+				$pow60 = $powSchedule->nextOpenReservationTarget(2);
+				$pow90 = $powSchedule->nextOpenReservationTarget(3);
+				$pow120 = $powSchedule->nextOpenReservationTarget(4);
+				$yrlGSSSchedule = new Schedule("YRL GSS");
+				$yrlGSS30 = $yrlGSSSchedule->nextOpenReservationTarget(1);
+				$yrlGSS60 = $yrlGSSSchedule->nextOpenReservationTarget(2);
+				$yrlGSS90 = $yrlGSSSchedule->nextOpenReservationTarget(3);
+				$yrlGSS120 = $yrlGSSSchedule->nextOpenReservationTarget(4);
+				$yrlPodsSchedule = new Schedule("YRL Pods");
+				$yrlPods30 = $yrlPodsSchedule->nextOpenReservationTarget(1);
+				$yrlPods60 = $yrlPodsSchedule->nextOpenReservationTarget(2);
+				$yrlPods90 = $yrlPodsSchedule->nextOpenReservationTarget(3);
+				$yrlPods120 = $yrlPodsSchedule->nextOpenReservationTarget(4);
+				/*
+				$currentTimeInHalfHours = 2 * date('H');
+				if (date('i') >= 30) {
+					$currentTimeInHalfHours += 1;
+				}
+				$html .= "Half hour time: $currentTimeInHalfHours <br>";
+				$html .= debugSpaceArr("Powell");*/
+	$html .= '
+		<h4><a href="http://www.library.ucla.edu/reservations/powell" target="_blank">Powell Rooms Availability</a></h4>
+		<div id="powell-availability" style="background-color:#3EAF19;padding:8px">
+			<table>
+			<tr>
+				<td><strong><font color="#E6E6E6">30 min</font></strong></td>
+				<td><strong><font color="#E6E6E6">60 min</font></strong></td>
+				<td><strong><font color="#E6E6E6">90 min</font></strong></td>
+				<td><strong><font color="#E6E6E6">120 min</font></strong></td>
+			</tr>
+			<tr>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($pow30); $html .= '</font></td>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($pow60); $html .= '</font></td>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($pow90); $html .= '</font></td>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($pow120); $html .= '</font></td>
+			</tr>
+			</table>
+		</div>
+		<h4><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank">YRL Rooms Availability</a></h4>
+		<div id="yrl-gss-availability" style="background-color:#3EAF19;padding:8px">
+			<table>
+			<tr>
+				<td><strong><font color="#E6E6E6">30 min</font></strong></td>
+				<td><strong><font color="#E6E6E6">60 min</font></strong></td>
+				<td><strong><font color="#E6E6E6">90 min</font></strong></td>
+				<td><strong><font color="#E6E6E6">120 min</font></strong></td>
+			</tr>
+			<tr>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($yrlGSS30); $html .= '</font></td>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($yrlGSS60); $html .= '</font></td>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($yrlGSS90); $html .= '</font></td>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($yrlGSS120); $html .= '</font></td>
+			</tr>
+			</table>
+		</div>
+		<h4><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank">YRL Pods Availability</a></h4>
+		<div id="yrl-pods-availability" style="background-color:#3EAF19;padding:8px">
+			<table>
+			<tr>
+				<td><strong><font color="#E6E6E6">30 min</font></strong></td>
+				<td><strong><font color="#E6E6E6">60 min</font></strong></td>
+				<td><strong><font color="#E6E6E6">90 min</font></strong></td>
+				<td><strong><font color="#E6E6E6">120 min</font></strong></td>
+			</tr>
+			<tr>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($yrlPods30); $html .= '</font></td>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($yrlPods60); $html .= '</font></td>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($yrlPods90); $html .= '</font></td>
+				<td><font color="#E6E6E6">'; $html .= convertHalfHourToTime($yrlPods120); $html .= '</font></td>
+			</tr>
+			</table>
+		</div>';
+	// Links: "Group Study Spaces", "How to Log In", and "How to Print"
+	$html .= '
+			</div>
+			<p>
+			<div style="background-color:#ECF5FD;padding:10px;">
+				<ul>
+					<li><a href="http://www.library.ucla.edu/reservations/powell" target="_blank">Reserve a Space at Powell</a></li>
+					<li><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank">Reserve a Space at YRL</a></li>
+					<li><a href="group-study-spaces">Group Study Spaces</a></li>
+					<li><a href="overview-and-use">How to Log In</a></li>
+					<li><a href="printers">How to Print</a></li>
+				</ul>
+			</div>
+		</div>';
+				
+	////////////////////
+	/// Right Column
+	////////////////////
+
+	// Static content
+	$html .= '	
+		<div id="home-right">
+			<img src="/sites/default/files/Right-Home.jpg" align="center">
+			<h2>Laptop Lending</h2>
+			<h6>Throughout the UCLA Libraries</h6>
+			<p>Currently enrolled UCLA Students, currently employed UCLA Faculty and staff members with a BruinCard or photo ID may check out a laptop using their UCLA Logon and password.</p>
+			<div id="home-most-laptops">
+				<h3>Laptop Availability</h3>';
+	// Number of Available Laptops dynamic content: shows which library has the most laptops and how many they have	
+				$laptop_array = get_laptops_array();
+				for ($i = 0; $i < count($laptop_array); $i++) {
+					if ($laptop_array[$i]['location'] == "College Library") {
+	$html .=	   		'<div id="powell-laptops" style="background-color:#67B0B0;padding:10px;color:#E6E6E6;">
+						<strong>Powell has <em>' . $laptop_array[$i]['count'] . '</em> available laptops</strong>
+						</div>';		
+					}
+					if ($laptop_array[$i]['location'] == "Research Library") {
+	$html .=	   		'<div id="powell-laptops" style="background-color:#67B0B0;padding:10px;color:#E6E6E6;">
+						<strong>YRL has <em>' . $laptop_array[$i]['count'] . '</em> available laptops</strong>
+						</div>';	
+					}
+				}
+	// Links: "Check out a Laptop", "Known Issues", "Renew a Laptop", and "Print from a Laptop"
+	$html .= '
+			</div>
+			<p>
+			<div style="background-color:#ECF5FD;padding:10px;">
+				<ul>
+					<li><a href="borrow-laptop">Check Out a Laptop</a></li>
+					<li><a href="http://www.library.ucla.edu/clicc/known-issues">Known Issues</a></li>
+					<li><a href="borrow-laptop">Renew a Laptop</a></li>
+					<li><a href="borrow-laptop">Print from a Laptop</a></li>
+				</ul>
+			</div>
+		</div>';
+				
+	////////////////////
+	/// Center Column
+	////////////////////
+
+	// Static content
+	$html .= '
+		<div id="home-center">
+			<img src="/sites/default/files/Center-Home.jpg" align="center">
+			<h2>Classrooms</h2>
+			<h6>Third Floor of Powell Library Building</h6>
+			<p>The CLICC Classrooms are three electronic learning spaces with desktop stations and laptops, as well as other instructional equipment and services.</p>
+			<div id="home-classroom-availability">
+				<h3>Classroom Availability</h3>';
+				// Classroom Availability dynamic content: Shows whether or not classrooms are available for drop-in's at:
+				// Powell, 3rd floor, Classrooms A, B, and C
+				// YRL, RC Classroom (Research Commons
+				$now = date('l');
+				// Availability: 0 == false, 1 == true, 2 == class-use only
+				$classrooma_available_now = 2;
+				$classroomb_available_now = 1;
+				$classroomc_available_now = 1;
+				$classroomrc_available_now = 2;	
+				if ($now == 'Saturday' || $now == 'Sunday') {
+					$classrooma_available_now = 0;
+					$classroomb_available_now = 0;
+					$classroomc_available_now = 0;
+					$classroomrc_available_now = 0;	
+				}
+				else {
+					// $jsonObjectA = json_decode(file_get_contents("http://webservices-dev.library.ucla.edu/irma/schedules/classrooms/today/ClassroomA"), true);
+					$jsonObjectB = json_decode(file_get_contents("http://webservices-dev.library.ucla.edu/irma/schedules/classrooms/today/ClassroomB"), true);
+					$jsonObjectC = json_decode(file_get_contents("http://webservices-dev.library.ucla.edu/irma/schedules/classrooms/today/ClassroomC"), true);
+					// $jsonObjectRC = json_decode(file_get_contents("http://webservices-dev.library.ucla.edu/irma/schedules/classrooms/today/ClassroomRC"), true);
+					if ($jsonObjectB != 'null') {
+						if (sizeof($jsonObjectB['classes']) != 0) {
+							for ($i = 0; $i < sizeof($jsonObjectB['classes']); $i++){
+								$now = date('Y-m-d H:i');
+								$classBeg = $jsonObjectB['classes'][$i]['startDate'];
+								$classEnd = $jsonObjectB['classes'][$i]['endDate'];
+								if ($now >= $classBeg && $now <= $classEnd) {
+									$classroomb_available_now = 2;
+								}
+							}
+						}
+					}
+					if ($jsonObjectC != 'null') {
+						if (sizeof($jsonObjectC['classes']) != 0) {	
+							for ($i = 0; $i < sizeof($jsonObjectC['classes']); $i++) {
+								$now = date('Y-m-d H:i');
+								$classBeg = $jsonObjectC['classes'][$i]['startDate'];
+								$classEnd = $jsonObjectC['classes'][$i]['endDate'];
+								if ($now >= $classBeg && $now <= $classEnd) {
+									$classroomc_available_now = 2;
+								}							
+							}
+						}
+					}
+				}
+				$now = date('H');
+				$nowStr = strftime($now);
+				$nowInt = (int)$now;
+				$openCloseArr = checkOpenCloseTime("Classrooms");
+				if ($nowInt < $openCloseArr['open'] || $nowInt >= $openCloseArr['close']){
+					$classrooma_available_now = 0;
+					$classroomb_available_now = 0;
+					$classroomc_available_now = 0;
+					$classroomrc_available_now = 0;
+				}
+				// Classroom A
+				if ($classrooma_available_now == 0) {
+					$html .= '
+					<div id="home-classroom-a" style="background-color:#FF4040;padding:10px;color:#E6E6E6;">
+					<strong>Classroom A: <em>Closed</em></strong>
+					</div>';
+				}
+				else if ($classrooma_available_now == 2) {
+					$html .= '
+					<div id="home-classroom-a" style="background-color:#CC6600;padding:10px;color:#E6E6E6;">
+					<strong>Classroom A: <em>Class Use Only</em></strong>
+					</div>';
+				}
+				// Classroom B
+				if ($classroomb_available_now == 0) {
+					$html .= '
+					<div id="home-class-room-b" style="background-color:#FF4040;padding:10px;color:#E6E6E6;">
+					<strong>Classroom B: <em>Closed</em></strong>
+					</div>';
+				}
+				else if ($classroomb_available_now == 1) {
+					$html .= '
+					<div id="home-classroom-b" style="background-color:#33CC00;padding:10px;color:#E6E6E6;">
+					<strong>Classroom B: <em>Open to Drop-ins</em></strong>
+					</div>';
+				}
+				else if ($classroomb_available_now == 2) {
+					$html .= '
+					<div id="home-classroom-b" style="background-color:#CC6600;padding:10px;color:#E6E6E6;">
+					<strong>Classroom B: <em>Class Use Only</em></strong>
+					</div>';
+				}
+				// Classroom C
+				if ($classroomc_available_now == 0) {
+					$html .= '
+					<div id="home-classroom-c" style="background-color:#FF4040;padding:10px;color:#E6E6E6;">
+					<strong>Classroom C: <em>Closed</em></strong>
+					</div>';
+				}
+				else if ($classroomc_available_now == 1) {
+					$html .= '
+					<div id="home-classroom-c" style="background-color:#33CC00;padding:10px;color:#E6E6E6;">
+					<strong>Classroom C: <em>Open to Drop-ins</em></strong>
+					</div>';
+				}
+				else if ($classroomc_available_now == 2) {
+					$html .= '
+					<div id="home-classroom-c" style="background-color:#CC6600;padding:10px;color:#E6E6E6;">
+					<strong>Classroom C: <em>Class Use Only</em></strong>
+					</div>';
+				}
+				// Classroom RC
+				if ($classroomrc_available_now == 0) {
+					$html .= '
+					<div id="home-classroom-rc" style="background-color:#FF4040;padding:10px;color:#E6E6E6;">
+					<strong>RC Classroom: <em>Closed</em></strong>
+					</div>';
+				}
+				else if ($classroomrc_available_now == 2) {
+					$html .= '
+					<div id="home-classroom-rc" style="background-color:#CC6600;padding:10px;color:#E6E6E6;">
+					<strong>RC Classroom: <em>Class Use Only</em></strong>
+					</div>';
+				}
+				
+	// Links: "Software Shortcut", "Hours and Help", and "Instructional Technology"
+	$html .= '
+			</div>
+			<p>
+			<div style="background-color:#ECF5FD;padding:10px;">
+				<ul>
+					<li><a href="https://sw-shortcut.library.ucla.edu/" target="_blank">Software Shortcut</a></li>
+					<li><a href="hours-and-help">Hours and Help</a></li>
+					<li><a href="instructional-technology">Instructional Technology</a></li>
+				</ul>
+			</div>
+		</div>';
+					
+	////////////////////
+	/// End of container
+	////////////////////
+
+	$html .= '
+	</div>';
+				
+	// Return entire html string to be displayed
+	return $html;
+
+}
+
+?>

@@ -1,0 +1,5 @@
+name = UCLA Search Test Forms
+description = Forms for testing all UCLA Search handlers
+package = UCLA Search modules
+core = 7.x
+version = "7.x-1.0"

@@ -1,0 +1,109 @@
+<?php
+/**
+ * @file
+ * Defines custom search form allowing user to choose from multiple search targets.
+ */
+
+/**
+ * Define custom search form
+ */
+function ucla_search_test_form($form, &$form_state) {
+  $form = array();
+  // #form_id apparently set by default from function name but be explicit
+  $form['#form_id'] = 'ucla_search_test_form';
+
+  // Select (drop-down) list for user to choose where to search
+  $form['search_target'] = array (
+    '#type' => 'select',
+    '#title' => 'Choose one:',
+    '#title_display' => 'invisible',
+    '#options' => array (
+      'site' => 'Site search',
+      'melvyl' => 'Melvyl',
+      'catalog' => 'Library Catalog',
+      'guides' => 'Research Guides',
+      'oac' => 'OAC (TESTING)',
+      'sfx' => 'SFX (TESTING)',
+      'database' => 'Database Titles (TESTING)',
+    )
+  );
+
+  $form['search_terms'] = array(
+    '#type' => 'textfield',
+    '#title' => 'search_terms',
+    '#required' => TRUE,
+    '#size' => 26,
+    '#maxlength' => 80,
+    '#default_value' => '',
+  );
+
+  $form['search_type'] = array (
+    '#type' => 'select',
+    '#title' => 'search_type',
+    '#options' => array (
+      'within' => 'within',
+      'starts' => 'starts with',
+      'exact' => 'exact',
+    )
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'OK',
+    '#id' => 'ucla-search-test-form-submit',
+  );
+
+  return $form;
+}
+
+/**
+ * Handle the form when submitted
+ * Implements FORM_ID_submit(), mentioned in passing at
+ * http://api.drupal.org/api/drupal/developer!topics!forms_api_reference.html/7#submit_property
+ */
+function ucla_search_test_form_submit($form, &$form_state) {
+  module_load_include('inc', 'ucla_search', 'includes/ucla_search_logger');
+  module_load_include('inc', 'ucla_search', 'includes/ucla_search_handlers');
+
+  // Core form info - all forms supply these
+  $search_target = $form['search_target']['#value'];
+  $search_terms = $form['search_terms']['#value'];
+  $search_date = $_SERVER['REQUEST_TIME'];
+  // If behind varnish, REMOTE_ADDR = IP of the varnish server
+  // and HTTP_X_FORWARDED_FOR = IP of remote user
+  $browser_ip = (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR']);
+
+  // Added info - not all forms supply these
+  $search_type = (isset($form['search_type']) ? $form['search_type']['#value'] : '');
+
+  // Put form info into array expected by search logger / handlers
+  $search_info = array (
+    'search_target' => $search_target,
+    'search_terms' => $search_terms,
+    'search_type' => $search_type,
+    'search_date' => $search_date,
+    'browser_ip' => $browser_ip,
+  );
+
+  // Log the search info before doing the search
+  ucla_search_log_search($search_info); 
+
+  // Send search info to router, which will do the actual search
+  ucla_search_route_search($search_info);
+}
+
+/**
+ * Implements hook_menu() 
+ */
+function ucla_search_test_menu() {
+  $items['testform'] = array(
+    'title' => 'UCLA custom search test form',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ucla_search_test_form'),
+    'access callback' => TRUE
+  );
+
+  return $items;
+}
+
+

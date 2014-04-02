@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Implements hook_views_api()
+ * Actual views integration code is in ucla_search.views.inc
+ */
+function ucla_search_views_api() {
+  return array(
+    'api' => 3
+  );
+}
+

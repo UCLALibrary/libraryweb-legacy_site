@@ -1,0 +1,256 @@
+<?php
+/**
+ * @file
+ * Custom module to display daily CLICC hours by location.
+ */
+ 
+ /**
+  * Implements hook_help().
+*/
+function clicc_hours_help($path, $args) {
+  switch($path) {
+    case 'admin/help#clicc_daily_hours': {
+      $ret_val = '<h3>' . t('About') . '</h3>';
+      $ret_val .= '<p>' . t('This module should display daily hours at all CLICC locations') . '</p>';
+      return $ret_val;
+      break;
+    }
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function clicc_hours_block_info() {
+  $blocks = array();
+  
+  $blocks['hours'] = array(
+    'info' => t('CLICC Hours'),
+  );
+  
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function clicc_hours_block_view($delta = '') {
+  $block = array();
+  
+  switch($delta) {
+    case 'hours': {
+	  $block['subject'] = t('CLICC Hours');
+	  $block['content'] = get_hours();
+	  break;
+	}
+  }
+  
+  return $block;
+}
+
+/**
+ * CLICC Daily Hours Block Content
+ *
+ * @param string $delta
+ *  The block ID.
+ *
+ * @return string
+ *  HTML output.
+ */
+function get_hours() {		
+	// Library Units
+		$units_arr = array(
+			'CLICC Lab' => 54, // CLICC Lab
+			'CLICC Classrooms' => 55,// CLICC Classrooms
+			
+			// Laptop Lending
+			'College' => 47, // College Laptop
+			'Research' => 48, // Research Laptop
+			'Arts' => 5, // Arts Laptop
+			'Music' => 16, // Music Laptop
+			'Biomedical' => 1, // Biomed Laptop
+			'EMS' => 25, // SEL EMS Laptop
+			'GEO' => 24,// SEL GEO Laptop
+		);
+		
+		$basic_url = 'http://webservices.library.ucla.edu/libservices/hours/unit/';
+		
+		$units_urls = array(
+			'CLICC Lab' => $basic_url . $units_arr['CLICC Lab'],
+			'CLICC Classrooms' => $basic_url . $units_arr['CLICC Classrooms'],
+			'College' => $basic_url . $units_arr['College'],
+			'Research' => $basic_url . $units_arr['Research'],
+			'Arts' => $basic_url . $units_arr['Arts'],
+			'Music' => $basic_url . $units_arr['Music'],
+			'Biomedical' => $basic_url . $units_arr['Biomedical'],
+			'EMS' => $basic_url . $units_arr['EMS'],
+			'GEO' => $basic_url . $units_arr['GEO'],
+		);	
+		
+		// Library hours as JSON objects
+		$lab = json_decode(file_get_contents($units_urls['CLICC Lab']))->unitSchedule;
+		$classrooms = json_decode(file_get_contents($units_urls['CLICC Classrooms']))->unitSchedule;
+		$col = json_decode(file_get_contents($units_urls['College']))->unitSchedule;
+		$res = json_decode(file_get_contents($units_urls['Research']))->unitSchedule;
+		$arts = json_decode(file_get_contents($units_urls['Arts']))->unitSchedule;
+		$mus = json_decode(file_get_contents($units_urls['Music']))->unitSchedule;
+		$bio = json_decode(file_get_contents($units_urls['Biomedical']))->unitSchedule;
+		$ems = json_decode(file_get_contents($units_urls['EMS']))->unitSchedule;
+		$geo = json_decode(file_get_contents($units_urls['GEO']))->unitSchedule;
+		
+		// Today's date
+		date_default_timezone_set('UTC');
+		$today = date('l, F jS, Y');
+		$day = '';
+		
+		// Alias for today's date
+		switch (date('N')) {
+			case 7:	
+				$day = 'sun';
+				break;
+			case 6:
+				$day = 'sat';
+				break;
+			case 5:
+				$day = 'fri';
+				break;
+			case 4:
+			case 3:
+			case 2:
+			case 1:
+				$day = 'monThurs';
+				break;
+		}
+		
+		$closed = $day . 'Closed';
+		$opens = $day . 'Opens';
+		$closes = $day . 'Closes';
+		
+		// set hours for each location
+		$hours = array();
+		
+			// CLICC Lab
+			if (is_closed($lab->$closed)) $hours['Lab'] = 'Closed';	
+			else $hours['Lab'] = format_time($lab->$opens, $lab->$closes);
+			
+			// CLICC Classrooms
+			if (is_closed($classrooms->$closed)) $hours['Classrooms'] = 'Closed';
+			else $hours['Classrooms'] = format_time($classrooms->$opens, $classrooms->$closes);
+			
+			// College Laptop Lending
+			if (is_closed($col->$closed)) $hours['College'] = 'Closed';
+			else $hours['College'] = format_time($col->$opens, $col->$closes);
+			
+			// Research Laptop Lending
+			if (is_closed($res->$closed)) $hours['Research'] = 'Closed';
+			else $hours['Research'] = format_time($res->$opens, $res->$closes);
+			
+			// Arts Laptop Lending
+			if (is_closed($arts->$closed)) $hours['Arts'] = 'Closed';
+			else $hours['Arts'] = format_time($arts->$opens, $arts->$closes);
+			
+			// Bio Laptop Lending
+			if (is_closed($bio->$closed)) $hours['Biomedical'] = 'Closed';
+			else $hours['Biomedical'] = format_time($bio->$opens, $bio->$closes);
+			
+			// Music Laptop Lending
+			if (is_closed($mus->$closed)) $hours['Music'] = 'Closed';
+			else $hours['Music'] = format_time($mus->$opens, $mus->$closes);
+			
+			// EMS Laptop Lending
+			if (is_closed($ems->$closed)) $hours['EMS'] = 'Closed';
+			else $hours['EMS'] = format_time($ems->$opens, $ems->$closes);
+			
+			// GEO Laptop Lending
+			if (is_closed($geo->$closed)) $hours['GEO'] = 'Closed';
+			else $hours['GEO'] = format_time($geo->$opens, $geo->$closes);
+		
+		$output = '';
+		$hoursCLICCArr =  array(
+			"Lab/Commons" => $hours['Lab'],
+			"Classrooms" => $hours['Classrooms'],
+		);
+		$hoursLaptopsArr =  array(
+			"College Library" => $hours['College'],
+			"Research Library" => $hours['Research'],
+			"Arts Library" => $hours['Arts'],
+			"Music Library" => $hours['Music'],
+			"Biomedical Library" => $hours['Biomedical'],
+			"SEL/EMS" => $hours['EMS'],
+			"SEL/GEO" => $hours['GEO'],
+		);
+		$html = "<h3>" . $today . "</h3><hr><table border='0'>";
+		
+		while($element = current($hoursCLICCArr)) {
+			$html .= "<tr><td><strong>" . key($hoursCLICCArr) . "</strong></td>";
+			$html .= "<td>" . $hoursCLICCArr[key($hoursCLICCArr)] . "</td></tr>";
+			next($hoursCLICCArr);
+		}
+		$html .= "</table><h3>Laptop Lending Hours</h3><hr><table border='0'>";
+		while($element = current($hoursLaptopsArr)) {
+			$html .= "<tr><td><strong>" . key($hoursLaptopsArr) . "</strong></td>";
+			$html .= "<td>" . $hoursLaptopsArr[key($hoursLaptopsArr)] . "</td></tr>";
+			next($hoursLaptopsArr);
+		}
+		$html .= "</table>";
+		// Table Markup 
+		/*$output .= "<table id=\lib_hours\" cellpadding=\"2\">";
+			$output .= "<thead>";
+				$output .= "<tr> <th colspan=\"2\" align=\"center\"> <font size=\"4\">" . $today . " </font> </th> </tr>";
+			$output .= "</thead>";
+			$output .= "<tbody>";
+				//$output .= "<tr> <th colspan=\"2\" align=\"center\"> CLICC Hours </th> </tr>";
+				$output .= "<tr> <td colspan=\"2\" style=\"border-bottom-style:solid; border-bottom-width:1px;\"> </td> </tr>";
+				$output .= "<tr>";
+					$output .= "<td align=\"left\"> <font size=\"2\"> Lab/Commons </td>";
+					$output .= "<td align=\"right\"> <font size=\"2\">" . $hours['Lab'] . "</td>";
+				$output .= "</tr>";
+				$output .= "<tr>";
+					$output .= "<td align=\"left\"> <font size=\"2\"> E-Learning Spaces </td>";
+					$output .= "<td align=\"right\"> <font size=\"2\">" . $hours['Classrooms'] . "</td>";
+				$output .= "</tr>";
+				$output .= "<tr> <th colspan=\"2\" align=\"center\"> <font size=\"3\"> Laptop Lending Hours </th> </tr>";
+				$output .= "<tr> <td colspan=\"2\" style=\"border-bottom-style:solid; border-bottom-width:1px;\"> </td> </tr>";
+				$output .= "<tr>";
+					$output .= "<td align=\"left\"> <font size=\"2\"> College Library </td>";
+					$output .= "<td align=\"right\"> <font size=\"2\">" . $hours['College'] . "</td>";
+				$output .= "</tr>";
+				$output .= "<tr>";
+					$output .= "<td align=\"left\"> <font size=\"2\"> Research Library </td>";
+					$output .= "<td align=\"right\"> <font size=\"2\">" . $hours['Research'] . " </td>";
+				$output .= "</tr>";
+				$output .= "<tr>";
+					$output .= "<td align=\"left\"> <font size=\"2\"> Arts Library </td>";
+					$output .= "<td align=\"right\"> <font size=\"2\">" . $hours['Arts'] . "</td>";
+				$output .= "</tr>";
+				$output .= "<tr>";
+					$output .= "<td align=\"left\"> <font size=\"2\"> Music Library </td>";
+					$output .= "<td align=\"right\"> <font size=\"2\">" . $hours['Music'] . " </td>";
+				$output .= "</tr>";
+				$output .= "<tr>";
+					$output .= "<td align=\"left\"> <font size=\"2\"> Biomedical Library </td>";
+					$output .= "<td align=\"right\"> <font size=\"2\">" . $hours['Biomedical'] . "</td>";
+				$output .= "</tr>";
+				$output .= "<tr>";
+					$output .= "<td align=\"left\"> <font size=\"2\"> SEL/EMS </td>";
+					$output .= "<td align=\"right\"> <font size=\"2\">" . $hours['EMS'] . "</td>";
+				$output .= "</tr>";
+				$output .= "<tr>";
+					$output .= "<td align=\"left\"> <font size=\"2\"> SEL/Geology </td>";
+					$output .= "<td align=\"right\"> <font size=\"2\">" . $hours['GEO'] . "</td>";
+				$output .= "</tr>";
+			$output .= "</tbody>";
+		$output .= "</table>";
+		*/
+		return $html;
+}
+
+function format_time($open, $close) {
+	if (!strcmp($open, $close)) return '24 hours';	// strcmp returns 0 for equal strings
+	return strftime('%l:%M %P', strtotime(substr($open, strpos($open, 'T')+1, 5))) . '-' . 	strftime('%l:%M %P', strtotime(substr($close, strpos($close, 'T')+1, 5)));
+}
+
+function is_closed($data) {
+	if (!strcmp('true', $data)) return true;	// strcmp returns 0 for equal strings
+	return false;
+}

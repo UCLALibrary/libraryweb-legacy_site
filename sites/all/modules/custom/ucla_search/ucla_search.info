@@ -1,0 +1,5 @@
+name = UCLA Search
+description = Routines for building searches to various targets, and for logging searches to database.
+package = UCLA Search modules
+core = 7.x
+version = "7.x-1.1"

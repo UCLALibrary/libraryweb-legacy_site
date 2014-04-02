@@ -1,0 +1,29 @@
+<?php
+/**
+ * @file
+ * Provides access to extra attributes not supported by the shib_auth module.
+ */
+
+/**
+ * Implements hook_user_insert
+ * Capture Shibboleth attributes and add them to the account (user) being created.
+ */
+function ucla_shib_extras_user_insert(&$edit, $account, $category) {
+  // At this point, $account has been created and $account->uid is valid.
+
+  // Do the following only if certain HTTP headers are set by Shibboleth
+  if ( !empty($_SERVER['HTTP_SN']) && !empty($_SERVER['HTTP_GIVENNAME']) ) {
+    // Create full name with HTTP_GIVENNAME (first name) and HTTP_SN (last name).
+    $new_full_name = $_SERVER['HTTP_GIVENNAME'] . '|||' . $_SERVER['HTTP_SN'];
+
+    // Set new value for the full name
+    $edit['field_user_full_name']['und'][0]['value'] = $new_full_name;
+  
+    // Flag $edit array as existing, so saving will update instead of create (insert)
+    $edit['is_new'] = FALSE;
+
+    // Save the changes
+    user_save($account, $edit);
+  };
+}
+

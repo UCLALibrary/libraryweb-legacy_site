@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+function available_laptops_block_info(){
+	$blocks['available_laptops'] = array(
+		'info' => t('Available Laptops'),
+		'cache' => DRUPAL_NO_CACHE,
+		);
+	return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function available_laptops_block_view($delta = ''){
+	$block = array();
+	switch ($delta) {
+		case 'available_laptops':{
+		$block['subject'] = t('Available Laptops');
+		$block['content'] = available_laptops_block_contents($delta);
+			break;
+		}
+	}
+	return $block;
+}
+
+/**
+ * Implements hook_block_contents().
+ */
+ function available_laptops_block_contents($delta){
+	$GLOBALS['conf']['cache'] = false; // Prevent caching
+	switch ($delta){
+		case 'available_laptops':{
+								// Check if production server
+			    if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == "www.clicc.ucla.edu") {
+			        $jsonurl = "http://webservices.library.ucla.edu/laptops/available";
+			    }
+			    // Otherwise use dev url
+			    else {
+			        $jsonurl = "http://webservices.library.ucla.edu/laptops/available";
+			    }
+				$json_output = json_decode(file_get_contents($jsonurl));
+			
+			$html = "<table border=\"0\">";
+					foreach ($json_output->laptops as $laptop)
+					{
+						$html .= "<tr>";
+						$html .= "<td>" . $laptop->publicName . "</td>"; 
+						if($laptop->availableCount <=5){
+							$html .=  "<td><font color='red'>" . $laptop->availableCount . "</font></td>";
+						}
+						else{
+							$html .=  "<td>" . $laptop->availableCount . "</td>";
+						}
+						$html .="</tr>";
+					}
+					   
+				$html .= "</table>";
+				
+				return $html;
+		}
+	}
+ }
