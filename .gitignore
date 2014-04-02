@@ -12,3 +12,6 @@ javascript
 pdf
 photographs
 
+# Allow some modules to be installed but kept out of the repo (but what about db dependencies?)
+sites/all/modules/test_only
+
