@@ -444,11 +444,11 @@ ini_set('session.cookie_lifetime', 2000000);
 
 /**
  * Memcached configuration
- * All sites have memcache module installed;
-*  point to site-specific memcache server in site-specific settings file.
+ * All sites have memcache module installed, but dev machines may not have
+ * relevant PHP PECL memcache/memcached extension.
+*  Memcache info is in site-specific settings files.
  */
-$conf['cache_backends'][] = 'sites/all/modules/memcache/memcache.inc';
-$conf['cache_default_class'] = 'MemCacheDrupal';
+
 // Add to cache forms in drupal database, not memcache see
 // http://drupal.org/node/1214536#comment-4748042
 // Fix for UCLA issue https://jira.library.ucla.edu/browse/DRUP-27
