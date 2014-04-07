@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * Implements hook_feeds_plugins().
+ */
+function feeds_table_processor_feeds_plugins() {
+  $path = drupal_get_path('module', 'feeds_table_processor');
+
+  $info = array();
+  $info['FeedsTableProcessor'] = array(
+    'name' => 'Table processor',
+    'description' => 'A generic table processor.',
+    'help' => '',
+    'handler' => array(
+      'parent' => 'FeedsProcessor',
+      'class' => 'FeedsTableProcessor',
+      'file' => 'FeedsTableProcessor.inc',
+      'path' => $path,
+    ),
+  );
+  return $info;
+}
+

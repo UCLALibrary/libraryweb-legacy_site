@@ -1,0 +1,737 @@
+﻿
+/* Basic Typography & Colors
+-------------------------------------------------------------- */
+/* Add general site styling here for typography and background */
+body {
+  color: #000000;
+  font-family: Verdana,Arial, Helvetica,sans-serif;
+  font-size: 68.75%;
+  line-height: 1.5em;
+  
+}
+
+/* Default link styles - separate a:visited for a different visited link style */
+a,
+a:link,
+a:visited {
+  color: #000099;
+  text-decoration: underline;
+}
+
+/* Hover/active link styles. Don't forget :focus for accessibility */
+a:hover,
+a:focus,
+a:active {
+}
+
+
+/* Specific Typography
+-------------------------------------------------------------- */
+#site-name {
+  font-size: 300%;
+  font-weight: normal;
+  line-height: 150%;
+  margin: 0;
+}
+
+
+/* HTML Elements
+-------------------------------------------------------------- */
+body {
+}
+
+h1 {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  font-style: normal;
+  line-height: 1em;
+  margin: 0 0 0 10px;
+  padding: 0;
+}
+
+h2 {
+  color: #000000;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  margin: 0 0 1em;
+}
+
+h3 {
+  color: #333399;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+}
+
+
+
+/* Site Info
+-------------------------------------------------------------- */
+.header-site-info{
+margin-bottom: 0;
+}
+
+/* Wrapper around logo, site name, and slogan */
+.header-site-info span {
+  display: block;
+}
+
+/* Add float here to put logo and site name side by side, also add margins as
+  needed */
+#logo {
+}
+
+/* Link and hover styles for site name */
+#site-name a:link,
+#site-name a:visited,
+#site-name a:hover,
+#site-name a:active {
+}
+
+/* Typography for site slogan */
+#slogan {
+}
+
+
+/* Regions
+
+  Classes (.region-name) should always be used instead of IDs (#region-name) so
+  that Skinr styles can override them with a class later
+-------------------------------------------------------------- */
+.preface-top .grid12-7 {
+  width: 561px;
+}
+
+
+/* All Regions
+-------------------------------------------------------------- */
+/* By default this wrapper is set to 100% width and centered -- override here to
+  narrow wrapper or align left or right */
+.page {
+}
+
+/* The 0 values here remove padding and spacing at the bottom of the page.
+  Remove to add a gap at the very bottom of the page */
+.page-inner {
+  border: 0;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+
+/* Header Region
+-------------------------------------------------------------- */
+.front .header-group-wrapper{
+background-image: url(../images/header-background.png);
+background-repeat: repeat-x;
+background-position: top;
+}
+
+.header-group-wrapper{
+background-image: url(../images/header-background-rest.png);
+background-repeat: repeat-x;
+background-position: top;
+}
+
+.header-group {
+  background-color: #536895;
+}
+
+/* Main Menu
+/-------------------------------------------------------------- */
+/* Add general styles for main menu here, such as typography, borders, floats,
+  or spacing above/below */
+.main-menu {
+  background-color:#000000;
+  float: left;
+}
+
+.main-menu .block {
+  margin-bottom: 0;
+}
+
+.main-menu .gutter{
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.main-menu .sf-menu ul {
+  width: 100%;
+}
+
+.main-menu .sf-menu li li:hover ul, 
+.main-menu .sf-menu li li.sfHover ul, 
+.main-menu .sf-menu li li li:hover ul, 
+.main-menu .sf-menu li li li.sfHover ul {
+    left: 190px;
+    top: 0;
+}
+
+.main-menu .sf-menu ul.sf-depth-3 {
+  width: auto;
+  margin-left: 4em;
+}
+
+.main-menu .sf-menu.sf-style-default{
+  margin-bottom: 0;
+}
+
+.main-menu .sf-menu.sf-style-default li {
+    background-color: #000000;
+    border-left: 1px solid #666666;
+    text-align: center;
+    width: 190px;
+}
+
+.main-menu .sf-menu.sf-style-default li.sf-depth-2,
+.main-menu .sf-menu.sf-style-default li.sf-depth-3,
+.main-menu .sf-menu.sf-style-default li.sf-depth-4{
+  border-left: none;
+}
+
+.main-menu .sf-menu.sf-style-default ul li.last.sf-depth-2,
+.main-menu .sf-menu.sf-style-default ul li.last.sf-depth-3, 
+.main-menu .sf-menu.sf-style-default ul li.last.sf-depth-4{
+  border-right: none;
+}
+
+.main-menu .sf-menu.sf-style-default li.last {
+  border-right: 1px solid #666666;
+
+}
+
+.main-menu .sf-menu.sf-style-default li:hover, 
+.main-menu .sf-menu.sf-style-default li.sfHover, 
+.main-menu .sf-menu.sf-style-default a:focus, 
+.main-menu .sf-menu.sf-style-default a:hover, 
+.main-menu .sf-menu.sf-style-default a:active {
+  background-color: #536895;
+}
+
+.main-menu .sf-menu.sf-style-default a, 
+.main-menu .sf-menu.sf-style-default a:visited {
+    background-color: #000000;
+    border: medium none;
+	color: #FFFFFF;
+    padding: 5px 0;
+}
+
+.main-menu .sf-menu.sf-style-default li a.sf-depth-2 {
+    background-color: #666666;
+    border: 1px solid #000000;
+    display: block;
+    margin-top: -1px;
+    padding: 5px;
+    text-align: left;
+   }
+
+.main-menu .sf-menu.sf-style-default li a:hover.sf-depth-2 {
+  background-color: #536895;
+}
+
+.main-menu .sf-menu.sf-style-default li a.sf-depth-3,
+.main-menu .sf-menu.sf-style-default li a.sf-depth-4 {
+  background-color:#536895;
+  border: 1px solid #000000;
+  display: block;
+  padding: 5px;
+  text-align: left;
+}   
+
+.main-menu .sf-menu.sf-style-default li a:hover.sf-depth-3,
+.main-menu .sf-menu.sf-style-default li a:hover.sf-depth-4 {
+  background-color: #666666;
+}
+
+
+
+
+
+
+
+
+/* Header - Search
+-------------------------------------------------------------- */
+.block-search {
+    background-color: #666666;
+    height: 30px;
+    margin-bottom: 0;
+    padding: 0.5em 0 0;
+    position: relative;
+}
+
+.block-search h2.block-title {
+    color: #FFFFFF;
+    float: left;
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    font-size: 11px;
+    font-weight: normal;
+    margin-right: 10px;
+    margin-top: 7px;
+    position: absolute;
+    right: 170px;
+    top: 2px;
+}
+
+.search-box-inner {
+}
+
+.block-search form#search-block-form {
+  background-color: #666666;
+  float: right;
+  margin: 0;
+  padding: 0;
+}
+
+.block-search input#edit-search-block-form--2 {
+  fl
+  margin-top: 3px;
+}
+
+/* Sitemap block on Frontpage*/
+
+.sitemap {
+    background-color: #666666;
+    height: 35px;
+    margin-bottom: 0;
+}
+
+.sitemap p {
+ padding-left: 40px;
+}
+
+.sitemap a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+
+.questions{
+  list-style: none;
+  margin-bottom: 0;
+  position: relative;
+}
+
+/*-Questions Block in header-*/
+
+.questions img {
+  position: absolute;
+  top: 2px;
+  right: 66px;
+}
+
+.questions ul {
+list-style: none;
+position: absolute;
+right: 20px;
+top: 20px;
+}
+
+.questions ul li {
+  float: left;
+  margin-right: 4px;
+}
+
+.questions ul li a {
+  color: #FFFFFF;
+}
+
+/*  Main Area (content + sidebars)
+-------------------------------------------------------------- */
+.main {
+}
+
+
+/* Sidebar Regions
+-------------------------------------------------------------- */
+/* Sidebar widths can be controlled through theme settings */
+.sidebar-first {
+}
+
+.sidebar-second {
+}
+
+
+/* Content Region
+-------------------------------------------------------------- */
+.region-content {
+}
+
+/* Footer Region
+-------------------------------------------------------------- */
+.footer {
+}
+
+.footer .block-menu ul.menu {
+  background-color: red;
+}
+
+.footer .block-menu ul.menu li {
+  list-style: none;
+  float: left;
+  margin-right: 5px;
+  border-right: 1px solid #000000;
+  padding-right: 5px;  
+}
+
+.footer .block-menu ul.menu li.last {
+  border: none;
+}
+
+.footer .block-menu ul.menu li a {
+  color: #000099;
+  text-decoration: underline;
+}
+
+.footer-inner {
+}
+
+
+/* Page titles
+/-------------------------------------------------------------- */
+/* Page and full node titles */
+h1.title {
+ color: #333333;
+ float: left;
+ font-family: "Times New Roman", Times, serif;
+ font-size: 17px;
+ font-style: italic;
+ line-height: 1em;
+ margin: 0 0 0 10px;
+ padding: 0;
+}
+
+
+/* Default node styles
+/-------------------------------------------------------------- */
+/* Change unpublished and preview colors for dark background themes */
+.node-unpublished {
+}
+.preview .node {
+}
+
+/* Typography for node titles */
+h2.title {
+  color: #000000;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  margin: 0 0 1em;
+}
+
+/* Colors and styles for linked node titles, ie. teaser listing at /node */
+h2.title a:link,
+h2.title a:visited {
+}
+
+h2.title a:hover,
+h2.title a:focus,
+h2.title a:active {
+}
+
+/* Separators and padding for node teasers */
+.node-teaser {
+}
+
+/* Author/date info */
+.meta {
+}
+
+.submitted {
+}
+
+/* Links for nodes (taxonomy, commenting, read more, etc) */
+.node ul.links li {
+}
+.node ul.links a {
+}
+
+/* Only more/read more links */
+div.node .read-more a,
+div.node .more-link a {
+}
+
+/* Drupal Messages
+/-------------------------------------------------------------- */
+/* General style for all errors/messages (border, padding, etc.) */
+div.content-messages div.messages,
+div.content-help div.help {
+}
+
+/* Status messages: green */
+div.content-messages-inner div.status {
+}
+
+/* Warning messages: yellow */
+div.content-messages-inner div.warning {
+}
+
+/* Error messages: red */
+div.content-messages-inner div.error {
+}
+
+/* Help messages: blue */
+div.content-help-inner div.help {
+}
+
+/* Error that appears when a required form field is not filled out */
+.form-item input.error,
+.form-item textarea.error,
+.form-item select.error {
+}
+
+/* "New" text and required form field asterisk (default = red) */
+.marker,
+.form-required {
+}
+
+
+/* Default block title styles
+/-------------------------------------------------------------- */
+h2.block-title {
+}
+
+
+/* Breadcrumbs
+-------------------------------------------------------------- */
+.breadcrumbs {
+}
+
+.breadcrumbs a:link,
+.breadcrumbs a:visited {
+}
+
+
+/* Pagers
+-------------------------------------------------------------- */
+ul.pager {
+}
+
+ul.pager li {
+}
+
+ul.pager a,
+ul.pager li.pager-current {
+}
+
+ul.pager li.pager-current {
+}
+
+ul.pager a:hover,
+ul.pager a:active,
+ul.pager a:focus {
+}
+
+/* Forms
+/-------------------------------------------------------------- */
+/* Typography and backgrounds for all form buttons */
+form input.form-submit {
+}
+
+form {
+    background-color: #E6E6E6;
+    margin-bottom: 1em;
+    padding: 1em;
+}
+
+label {
+  font-weight: normal;
+}
+
+/* Hover style for form buttons */
+form input.form-submit:hover,
+form input.form-submit.hover,
+form input.form-submit:focus {
+}
+
+/* Typography, background, borders, padding for form fields */
+.form-item input,
+.form-item select,
+.form-item textarea {
+}
+
+/* Remove backgrounds and border on radios and checkboxes */
+.form-item .form-radio,
+.form-item .form-checkbox {
+  background: none;
+  border: none !important;
+}
+
+/* Fieldset wrapper around groups of form elements -- add border here */
+fieldset {
+}
+
+/* Typography and spacing for legend of fieldsets */
+fieldset legend {
+}
+
+/* Link style for legend of fieldsets */
+fieldset legend,
+legend.collapse-processed,
+legend.collapse-processed a:link,
+legend.collapse-processed a:visited {
+}
+
+/* Custom icons on (open) collapsible fieldsets */
+html.js fieldset.collapsible legend a:link,
+html.js fieldset.collapsible legend a:visited {
+}
+
+/* Custom icons on (closed) collapsible fieldsets */
+html.js fieldset.collapsed legend a:link,
+html.js fieldset.collapsed legend a:visited {
+}
+
+
+/* Tables
+-------------------------------------------------------------- */
+table {
+background-color: #FFFFFF;
+border-left: none;
+border-right: none;
+}
+
+/* Body of tables */
+tbody {
+background-color: #FFFFFF;
+}
+
+/* Header of tables */
+thead th,
+th {
+background-color: #E6E6E6;
+border-bottom: none;
+font-weight: normal;
+border-right: 1px solid #FFFFFF;
+text-align: center;
+padding-top: .25em;
+padding-bottom: .25em;
+}
+
+tr.even, tr.odd {
+    background-color: #FFFFFF;
+    border: 1px dashed #CCCCCC;
+    border-top: none;
+}
+
+td {
+background-color: #FFFFFF;
+border-left: 1px dashed #CCCCCC;
+padding: .5em;
+}
+
+tbody th {
+}
+
+/* Alternating row background styles */
+tr.even,
+tr.even td {
+}
+
+tr.odd,
+tr.odd td {
+}
+
+td.active {
+}
+
+tr.drag td,
+tr.drag-previous td {
+}
+
+
+/* Maintenance Page
+/-------------------------------------------------------------- */
+/* Maintenance page tpl file in Fusion Core has simplified layout, but you can
+  also add specific styles, such as a background, just for your offline page */
+.in-maintenance  {
+}
+
+
+/*--------------------------------------------------------------*/
+/* Module styles
+/-------------------------------------------------------------- */
+
+
+/* Book
+/-------------------------------------------------------------- */
+.book-navigation .menu {
+}
+
+.book-navigation .page-links {
+}
+
+
+/* Comments
+/-------------------------------------------------------------- */
+/* Style for each individual comment */
+div.comment {
+}
+
+/* Subject (title) of each comment */
+div.comment h3.title {
+}
+
+/* Links (edit, reply, delete) for each comment */
+div.comment div.links a,
+div.comment ul.links a {
+}
+
+/* Alternating styles for even/odd comments */
+.comments .comment.odd {
+}
+
+.comments .comment.even {
+}
+
+/* A special highlight style for a comment by the author of the node */
+.comments div.comment-by-author {
+}
+
+/* Comment signatures */
+.signature {
+}
+
+/* User avatars in comments */
+.comment-wrapper .picture img {
+}
+
+
+/* Forum
+/-------------------------------------------------------------- */
+#forum .description {
+}
+
+.forum-topic-navigation {
+}
+
+
+/* Poll
+/-------------------------------------------------------------- */
+div.poll div.bar {
+}
+
+div.poll div.bar div.foreground {
+}
+
+
+/* Profiles
+/-------------------------------------------------------------- */
+.profile .picture {
+}
+
+/* Styles for sub-headings on user profiles */
+.profile dt {
+}
+
+
+/* IE
+/-------------------------------------------------------------- */
+html.ie7 .block-search form#search-block-form, .custom-search form {
+  position: absolute;
+  right: 0;
+  top:0;
+  width:300px;
+}
+
+html.ie7 body.front .header-group-wrapper {
+  height: 70px;
+}

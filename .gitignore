@@ -1,16 +1,17 @@
 # Ignore configuration files that may contain sensitive information.
-sites/*/*settings*.php
+sites/*/*.settings.php
 
 # Ignore paths that contain user-generated content.
 sites/*/files
 sites/*/private
 
 # Ignore legacy files from old RedDot system - these live outside of Drupal
-css
-images
-javascript
-pdf
-photographs
+# Ignore only top-level directories
+/css
+/images
+/javascript
+/pdf
+/photographs
 
 # Allow some modules to be installed but kept out of the repo (but what about db dependencies?)
 sites/all/modules/test_only

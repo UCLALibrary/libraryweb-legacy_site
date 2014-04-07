@@ -1,0 +1,1716 @@
+/* Basic Typography & Colors
+-------------------------------------------------------------- */
+
+/* Add general site styling here for typography and background */
+
+body {
+  color: #000000;
+  font-family: Verdana,Arial, Helvetica,sans-serif;
+  font-size: 68.75%;
+  line-height: 1.5em;
+}
+
+/* Default link styles - separate a:visited for a different visited link style */
+
+a,
+a:link,
+a:visited {
+  color: #000099;
+  text-decoration: underline;
+}
+
+/* Hover/active link styles. Don't forget :focus for accessibility */
+
+a:hover,
+a:focus,
+a:active {
+  
+}
+
+table {
+}
+
+.views-field-field-section-title a {
+  color: white;
+  text-decoration: none;
+}
+
+/* Specific Typography
+-------------------------------------------------------------- */
+
+#site-name {
+  font-size: 300%;
+  font-weight: normal;
+  line-height: 150%;
+  margin: 0;
+}
+
+
+/* Choose Search
+-------------------------------------------------------------- */
+#search-choice {
+  float: left;
+  position: relative;
+  z-index: 99;
+  background-color: white;
+  padding: 2px;
+}
+
+.header-group-wrapper #block-block-2 {
+   width: 500px;
+}
+
+.front #block-search-form {
+  margin: -30px 0 8px;
+}
+
+#worldcatsearch input#q,
+#search-block-form input.form-text {
+  padding: 2px;
+  width: 158px;
+  margin-right: 5px;
+}
+
+#worldcatsearch input#wcsbtn2w,
+#search-block-form input.form-submit,
+#search-block-form .form-wrapper {
+  margin: 0;
+}
+
+
+
+/* HTML Elements
+-------------------------------------------------------------- */
+
+body {
+  
+}
+
+h1 {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 17px;
+  font-style: italic;
+  line-height: 1em;
+  margin: 0 0 0 10px;
+  padding: 0;
+}
+
+h2 {
+  color: #000000;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  margin: 1em 0;
+}
+
+h3 {
+  color: #333399;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-style: italic;
+  margin-bottom: 0;
+}
+
+p:first-child {
+  margin-top: 0px;
+}
+
+p:last-child {
+  margin-bottom: 0px;
+}
+
+h3 + p {
+  margin-top: 0;
+}
+
+/* Site Info
+-------------------------------------------------------------- */
+
+.header-site-info {
+  margin-bottom: 0;
+}
+
+/* Wrapper around logo, site name, and slogan */
+
+.header-site-info span {
+  display: block;
+}
+
+/* Link and hover styles for site name */
+
+#site-name a:link,
+#site-name a:visited,
+#site-name a:hover,
+#site-name a:active {
+  
+}
+
+/* Typography for site slogan */
+
+#slogan {
+  
+}
+
+/* Regions  Classes (.region-name) 
+should always be used instead of IDs (#region-name) so  that 
+Skinr styles can override them with a class later
+-------------------------------------------------------------- */
+
+/* All Regions
+-------------------------------------------------------------- */
+
+/* By default this wrapper is set to 100% width and centered -- 
+override here to  narrow wrapper or align left or right */
+
+.page {
+  
+}
+
+/* The 0 values here remove padding and spacing at the bottom of the page.  Remove to add a gap at the very bottom of the page */
+
+.page-inner {
+  border: 0;
+  margin-bottom: 0;
+}
+
+/* Header Region
+-------------------------------------------------------------- */
+
+.header-group-wrapper {
+  background: #666 url(../images/header-background.png) repeat-x center top;
+}
+
+/* Main Menu/
+-------------------------------------------------------------- */
+
+/* Add general styles for main menu here, such as typography, borders, floats,  or spacing above/below */
+
+.main-menu-wrapper {
+  background: #000;
+}
+
+.front .main-menu-wrapper {
+  border-bottom: 1px solid #666;
+}
+
+.main-menu {
+  background-color: transparent;
+}
+
+.main-menu .block {
+  margin-bottom: 0;
+}
+
+.main-menu .gutter {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.main-menu .sf-menu ul {
+  width: 100%;
+}
+
+.main-menu .sf-menu li.sfHover ul,
+.main-menu .sf-menu li:hover ul {
+  border: 1px solid #000;
+  top: 28px;
+  width: 192px;
+}
+
+.main-menu .sf-menu li li:hover ul,
+.main-menu .sf-menu li li.sfHover ul {
+  left: 192px;
+  top: -1px;
+}
+
+.main-menu .sf-menu.sf-style-default {
+  margin-bottom: 0;
+}
+
+.main-menu .sf-menu.sf-style-default li {
+  background-color: #000;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 192px;
+}
+
+.main-menu .sf-menu.sf-style-default li a,
+.main-menu .sf-menu.sf-style-default li a:link,
+.main-menu .sf-menu.sf-style-default li a:visited {
+  background-color: #000;
+  border: none;
+  border-left: 1px solid #666666;
+  color: #FFFFFF;
+  padding: 5px 0;
+  width: 192px;
+}
+
+.main-menu .sf-menu.sf-style-default li.last > a,
+.main-menu .sf-menu.sf-style-default li:last-child > a {
+  border-right: 1px solid #666666;
+}
+
+.main-menu .sf-menu.sf-style-default li a.sf-depth-1 {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.main-menu .sf-menu.sf-style-default li.sfHover li a {
+  background-color: #666666;
+  border-bottom: 1px solid #000000;
+  border-left: 0;
+  border-right: 0;
+  display: block;
+  padding: 5px;
+  text-align: left;
+  width: 182px;
+}
+
+.main-menu .sf-menu.sf-style-default li.sfHover li a.sf-with-ul {
+  padding-right: 18px;
+  width: 169px;
+}
+
+.main-menu .sf-menu.sf-style-default li:hover > a,
+.main-menu .sf-menu.sf-style-default li.sfHover > a,
+.main-menu .sf-menu.sf-style-default a:focus,
+.main-menu .sf-menu.sf-style-default a:hover,
+.main-menu .sf-menu.sf-style-default a:active,
+.main-menu .sf-menu.sf-style-default li li:hover > a,
+.main-menu .sf-menu.sf-style-default li li.sfHover > a,
+.main-menu .sf-menu.sf-style-default li a:focus,
+.main-menu .sf-menu.sf-style-default li a:hover,
+.main-menu .sf-menu.sf-style-default li a:active {
+  background-color: #536895;
+}
+
+.main-menu .sf-menu.sf-style-default li.menuparent.active-trail > a {
+  background-color: #fff;
+  color: #000;
+}
+
+.main-menu .sf-menu.sf-style-default li.menuparent.active-trail > a .sf-sub-indicator {
+  background-image: url(../images/arrows-000.png);
+}
+
+.main-menu .sf-menu.sf-style-default li li.menuparent.active-trail > a {
+  background-color: #536895;
+  color: #fff;
+}
+
+.main-menu .sf-menu.sf-style-default li li.menuparent.active-trail > a .sf-sub-indicator {
+  background-image: url(../images/arrows-fff.png);
+}
+
+.main-menu .sf-menu.sf-style-default li.sfHover li.last > a,
+.main-menu .sf-menu.sf-style-default li.sfHover li:last-child > a {
+  border-bottom: 0;
+}
+
+/*Go up a level link*/
+
+.block.block-menu-parent-link {
+  margin-bottom: 0;
+}
+
+.block.block-menu-parent-link .gutter {
+  margin: -24px 0 0 8px;
+}
+
+.block + .block.block-menu-parent-link .gutter {
+  margin-top: 0;
+}
+
+.block.block-menu-parent-link a.single-item {
+  background: transparent url(../images/up-level.gif) no-repeat left top;
+  cursor: pointer;
+  display: block;
+  height: 20px;
+  margin: 0;
+  text-indent: -9999px;
+  width: 100%;
+}
+
+/* Header - Search
+-------------------------------------------------------------- */
+
+.block-search,
+.block.custom-search {
+  background-color: transparent;
+  clear: both;
+  margin: 0 0 6px 0;
+  padding: 0;
+  position: relative;
+}
+    .ie8 .block-search,
+    .ie8 .block.custom-search,
+    .ie7 .block-search,
+    .ie7 .block.custom-search {
+      margin-bottom:0px;
+    }
+
+.block.custom-search .gutter,
+.block-search .gutter {
+  margin-right: 0;
+}
+
+.block.custom-search h2.block-title,
+.block-search h2.block-title {
+  display: none;
+}
+
+.search-box-inner {
+  
+}
+
+.block-search form#search-block-form,
+.custom-search form {
+  background-color: transparent;
+  border: none;
+  float: right;
+  margin: 0;
+  padding: 0;
+  text-align: right;
+}
+
+/*.block.custom-search input[type="submit"] {
+  width: 36px;
+}*/
+
+.block.custom-search input#edit-search-terms {
+  width: 142px;
+}
+
+.block.custom-search input,
+.block-search .form-item,
+.block-search .form-actions,
+.block-search .form-item label {
+  display: inline-block;
+  margin: 0;
+}
+    .ie7 .block.custom-search input,
+    .ie7 .block-search .form-item,
+    .ie7 .block-search .form-actions,
+    .ie7 .block-search .form-item label {
+	zoom: 1;
+	display: inline;
+    }
+
+/* Sitemap block on Frontpage*/
+
+.sitemap {
+  background-color: #666666;
+  height: 35px;
+  margin-bottom: 0;
+}
+
+.sitemap p {
+  padding-left: 40px;
+}
+
+.sitemap a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.questions {
+  list-style: none;
+  margin-bottom: 0;
+  position: relative;
+}
+
+/*-Questions Block in header-*/
+
+.questions .gutter {
+  margin: 0;
+}
+
+.questions img {
+  position: absolute;
+  right: 60px;
+  top: 2px;
+}
+
+.questions ul {
+  list-style: none;
+  margin: 20px 0 0;
+  position: relative;
+  z-index: 99;
+}
+
+.questions ul li {
+  float: right;
+  margin-right: 4px;
+}
+
+.questions ul li a {
+  color: #FFFFFF;
+  font-size: 10px;
+  line-height: 13px;
+}
+
+/*  Prefaces
+-------------------------------------------------------------- */
+
+.preface-top-inner,
+.preface-bottom-inner {
+  border-bottom: 1px solid #999;
+}
+
+.preface-top-inner .block,
+.preface-bottom-inner .block {
+  margin-bottom: 0px;
+}
+
+.preface-top-inner .block .gutter,
+.preface-bottom-inner .block .gutter {
+  padding-top: 24px;
+}
+
+/*  Main Area (content + sidebars)
+-------------------------------------------------------------- */
+
+.main {
+  
+}
+
+.block.content-inner {
+  padding-top: 30px;
+}
+
+h1.title + .block.content-inner {
+  padding-top: 0;
+}
+
+/*basic block layout*/
+
+.block:last-child {
+  margin-bottom: 0px;
+}
+
+/* Sidebar Regions
+-------------------------------------------------------------- */
+
+/* Sidebar widths can be controlled through theme settings */
+
+.sidebars-split .sidebar-first-inner,
+.sidebars-both-first .sidebar-first-inner,
+.sidebars-both-first .sidebar-second-inner {
+  border-right: 1px solid #999;
+  margin-right: -1px;
+  padding-top:30px;
+}
+
+.sidebars-split .sidebar-second-inner,
+.sidebars-both-last .sidebar-first-inner,
+.sidebars-both-last .sidebar-second-inner {
+  border-left: 1px solid #999;
+  padding-top: 30px;
+}
+
+.sidebars-split.front  .sidebar-first-inner,
+.sidebars-both-first.front  .sidebar-first-inner,
+.sidebars-both-first.front  .sidebar-second-inner,
+.sidebars-split.front .sidebar-second-inner,
+.sidebars-both-last.front  .sidebar-first-inner,
+.sidebars-both-last.front  .sidebar-second-inner {
+  border-color: #666;
+}
+
+/* Content Region
+-------------------------------------------------------------- */
+
+.region-content {
+  
+}
+
+/* Footer Region
+-------------------------------------------------------------- */
+
+.footer-wrapper {
+  padding-top: 80px;
+}
+
+.front .footer-wrapper {
+  border-top: 1px solid #666;
+  padding-top: 40px;
+}
+
+.footer .block-menu ul.menu {
+  margin: 0;
+}
+
+.footer .block-menu ul.menu li {
+  float: left;
+  list-style: none;
+}
+
+.footer .block-menu ul.menu li a {
+  color: #000099;
+  display: block;
+  float: left;
+  font-size: 10px;
+  line-height: 11px;
+  padding: 0 4px;
+  text-decoration: underline;
+}
+
+.footer .block-menu ul.menu li.first a {
+  padding-left: 0;
+}
+
+.footer .block-menu ul.menu li.last a {
+  border: none;
+}
+
+.footer-inner {
+  font-size: 10px;
+  line-height: 14px;
+}
+
+/*last updated block*/
+
+#block-views-last_updated-block {
+  font-size: 10px;
+  margin: 0 0 4px 0;
+}
+
+/* Page titles/
+-------------------------------------------------------------- */
+
+/* Page and full node titles */
+
+h1.title {
+  color: #333333;
+  float: left;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 17px;
+  font-style: italic;
+  line-height: 1em;
+  margin: 24px 30px 24px;
+  padding: 0;
+}
+
+/* Default node styles/
+-------------------------------------------------------------- */
+
+/* Change unpublished and preview colors for dark background themes */
+
+.node-unpublished {
+  
+}
+
+.preview .node {
+  
+}
+
+/* Typography for node titles */
+
+h2.title {
+  color: #000000;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  margin: 0 0 1em;
+}
+
+/* Colors and styles for linked node titles, ie. teaser listing at /node */
+
+h2.title a:link,
+h2.title a:visited {
+  
+}
+
+h2.title a:hover,
+h2.title a:focus,
+h2.title a:active {
+  
+}
+
+/* Separators and padding for node teasers */
+
+.node-teaser {
+  
+}
+
+/* Author/date info */
+
+.meta {
+  
+}
+
+.submitted {
+  
+}
+
+/* Links for nodes (taxonomy, commenting, read more, etc) */
+
+.node ul.links li {
+  
+}
+
+.node ul.links a {
+  
+}
+
+/* Only more/read more links */
+
+div.node .read-more a,
+div.node .more-link a {
+  
+}
+
+/* Printer-friendly link */
+
+span.print-link.with-images,
+span.print-link .print_html {
+  display: block;
+  float: right;
+  position: relative;
+  z-index: 99;
+  margin: 0 -30px 0 30px;
+}
+
+span.print-link.with-images {
+  display: block;
+  float: none;
+  left: 505px;
+  margin: 0;
+  position: absolute;
+  z-index: 99;
+  top: 210px;
+}
+
+span.print-link a {
+  background: transparent url(../images/print.gif) no-repeat 50% 50%;
+  cursor: pointer;
+  display: block;
+  height: 13px;
+  line-height: 13px;
+  margin: 0 0 0 30px;
+  position: relative;
+  text-indent: -9999px;
+  width: 13px;
+  z-index: 99;
+  text-align: left;
+}
+
+/* Page Master node type/
+-------------------------------------------------------------- */
+
+.field-name-body {
+  clear: both;
+}
+.field-type-image.multiple-images .field-item,
+.field-type-image.single-image {
+  float: left;
+}
+
+.field-type-image img {
+  border-bottom: 1px solid #999;
+  border-right: 1px solid #999;
+  display: block;
+}
+
+.field-type-image.field-name-field-image150x225.single-image {
+  margin: -30px 0 30px -30px;
+  width: 192px;
+}
+
+.field-type-image.field-name-field-image150x225.multiple-images {
+  margin: 0 -30px 30px -30px;
+}
+
+.field-type-image.field-name-field-image150x225.multiple-images .field-item {
+  margin: -30px 0 0 0;
+}
+
+.field-type-image.field-name-field-image150x225.multiple-images .field-item:first-child {
+  margin: -30px 0 0 0;
+}
+.field-type-image.field-name-field-image150x225.multiple-images .field-item:last-child {
+ margin: -30px -30px 0 0;
+  }
+
+.field-type-image.field-name-field-image300x225.single-image {
+  margin: -30px -30px 30px 0;
+  width: 382px;
+}
+
+.field-type-image.field-name-field-image450x225.single-image  {
+  margin: -30px -30px 30px -30px;
+  width: 576px;
+}
+
+.field-type-image.field-name-field-image300x225 img {
+  height: 286px;
+  margin: 0;
+  width: 383px;
+}
+
+.field-type-image.field-name-field-image150x225 img {
+  height: 286px;
+  margin: 0;
+  width: 192px;
+}
+
+.field-type-image.field-name-field-image450x225 img {
+  border: none;
+  height: 286px;
+  margin: 0;
+  width: 576px;
+}
+
+.field-type-image .image-caption {
+  color: #333;
+  display: block;
+  float: left;
+  font-size: 10px;
+  line-height: 13px;
+  padding: 4px 2%;
+  width: 96%;
+}
+.field-type-image.multiple-images .image-caption{
+  margin-left: 1px;	
+}
+
+.field-type-image.field-name-field-image150x225 .image-caption {
+  border-right: 1px solid #999;
+}
+
+.field-type-image.field-name-field-image150x225.multiple-images .field-item:last-child .image-caption {
+  border-right: 0;
+}
+
+/* Content tabs/
+-------------------------------------------------------------- */
+
+.content-tabs,
+.content-tabs ul {
+  margin: 0;
+}
+
+/* Drupal Messages/
+-------------------------------------------------------------- */
+
+/* General style for all errors/messages (border, padding, etc.) */
+
+div.content-messages div.messages,
+div.content-help div.help {
+  
+}
+
+/* Status messages: green */
+
+div.content-messages-inner div.status {
+  
+}
+
+/* Warning messages: yellow */
+
+div.content-messages-inner div.warning {
+  
+}
+
+/* Error messages: red */
+
+div.content-messages-inner div.error {
+  
+}
+
+/* Help messages: blue */
+
+div.content-help-inner div.help {
+  
+}
+
+/* Error that appears when a required form field is not filled out */
+
+.form-item input.error,
+.form-item textarea.error,
+.form-item select.error {
+  
+}
+
+/* "New" text and required form field asterisk (default = red) */
+
+.marker,
+.form-required {
+  
+}
+
+/* Default block title styles/
+-------------------------------------------------------------- */
+
+h2.block-title {
+  
+}
+
+/* Breadcrumbs
+-------------------------------------------------------------- */
+
+.breadcrumbs {
+  
+}
+
+.breadcrumbs a:link,
+.breadcrumbs a:visited {
+  
+}
+.main-menu-wrapper,
+.main-menu {
+  height:30px;
+  z-index: 50;
+}
+
+/* Pagers
+-------------------------------------------------------------- */
+
+ul.pager {
+  
+}
+
+ul.pager li {
+  
+}
+
+ul.pager a,
+ul.pager li.pager-current {
+  
+}
+
+ul.pager li.pager-current {
+  
+}
+
+ul.pager a:hover,
+ul.pager a:active,
+ul.pager a:focus {
+  
+}
+
+/* Forms/
+-------------------------------------------------------------- */
+
+/* Typography and backgrounds for all form buttons */
+
+form input.form-submit {
+  
+}
+
+form {
+  background-color: #E6E6E6;
+  border-bottom: 1px dashed #333;
+  border-top: 1px dashed #333;
+  margin: 15px -30px;
+  padding: 10px 30px;
+}
+
+.sidebar-first form,
+.sidebar-second form {
+  border-right: 0px solid #999;
+  margin: 0 -30px;
+}
+
+label {
+  font-weight: normal;
+}
+
+/* Hover style for form buttons */
+
+form input.form-submit:hover,
+form input.form-submit.hover,
+form input.form-submit:focus {
+  
+}
+
+/* Typography, background, borders, padding for form fields */
+
+.form-item input,
+.form-item select,
+.form-item textarea {
+  max-width: 100%;
+}
+
+/* Remove backgrounds and border on radios and checkboxes */
+
+.form-item .form-radio,
+.form-item .form-checkbox {
+  background: none;
+  border: none !important;
+}
+
+/* Fieldset wrapper around groups of form elements -- add border here */
+
+fieldset {
+  
+}
+
+/* Typography and spacing for legend of fieldsets */
+
+fieldset legend {
+  
+}
+
+/* Link style for legend of fieldsets */
+
+fieldset legend,
+legend.collapse-processed,
+legend.collapse-processed a:link,
+legend.collapse-processed a:visited {
+  
+}
+
+/* Custom icons on (open) collapsible fieldsets */
+
+html.js fieldset.collapsible legend a:link,
+html.js fieldset.collapsible legend a:visited {
+  
+}
+
+/* Custom icons on (closed) collapsible fieldsets */
+
+html.js fieldset.collapsed legend a:link,
+html.js fieldset.collapsed legend a:visited {
+  
+}
+
+/* Tables
+-------------------------------------------------------------- */
+
+table {
+  background-color: #FFFFFF;
+  border: none;
+  vertical-align: middle;
+}
+
+/* Body of tables */
+
+tbody {
+  background-color: #FFFFFF;
+  border: none;
+}
+
+/* Header of tables */
+
+thead {
+  background-color: #E6E6E6;
+  border: none;
+}
+
+thead th,
+th {
+  background-color: #E6E6E6;
+  border: none;
+  border-right: 1px solid #FFFFFF;
+  font-weight: normal;
+  padding-bottom: .25em;
+  padding-top: .25em;
+  text-align: center;
+}
+
+thead th.last,
+th.last,
+thead th:last-child,
+th:last-child {
+  border-right: none;
+}
+
+tr.even,
+tr.odd,
+tr {
+  background-color: #FFFFFF;
+  border-bottom: 1px dashed #CCCCCC;
+  border-top: none;
+}
+
+td {
+  background-color: #FFFFFF;
+  border-left: 1px dashed #CCCCCC;
+  padding: .5em;
+}
+
+td.first,
+td:first-child {
+  border-left: none;
+}
+
+tbody th {
+  
+}
+
+/* Alternating row background styles */
+
+tr.even,
+tr.even td {
+  
+}
+
+tr.odd,
+tr.odd td {
+  
+}
+
+td.active {
+  
+}
+
+tr.drag td,
+tr.drag-previous td {
+  
+}
+
+/* Search Results
+-------------------------------------------------------------- */
+
+dl {
+  font-size: 12px;
+  line-height: 18px;
+  margin: 20px 0;
+}
+
+dt {
+  font-weight: bold;
+  line-height: 18px;
+  margin: 0 0 2px;
+}
+
+dd {
+  margin: 1px 0;
+}
+
+/* Maintenance Page/
+-------------------------------------------------------------- */
+
+/* Maintenance page tpl file in Fusion Core has simplified layout, but you can  also add specific styles, such as a background, just for your offline page */
+
+.in-maintenance {
+  
+}
+
+/* Module styles/
+-------------------------------------------------------------- */
+
+/* Book/
+-------------------------------------------------------------- */
+
+.book-navigation .menu {
+  
+}
+
+.book-navigation .page-links {
+  
+}
+
+/* Comments/
+-------------------------------------------------------------- */
+
+/* Style for each individual comment */
+
+div.comment {
+  
+}
+
+/* Subject (title) of each comment */
+
+div.comment h3.title {
+  
+}
+
+/* Links (edit, reply, delete) for each comment */
+
+div.comment div.links a,
+div.comment ul.links a {
+  
+}
+
+/* Alternating styles for even/odd comments */
+
+.comments .comment.odd {
+  
+}
+
+.comments .comment.even {
+  
+}
+
+/* A special highlight style for a comment by the author of the node */
+
+.comments div.comment-by-author {
+  
+}
+
+/* Comment signatures */
+
+.signature {
+  
+}
+
+/* User avatars in comments */
+
+.comment-wrapper .picture img {
+  
+}
+
+/* Forum/
+-------------------------------------------------------------- */
+
+#forum .description {
+  
+}
+
+.forum-topic-navigation {
+  
+}
+
+/* Poll/
+-------------------------------------------------------------- */
+
+div.poll div.bar {
+  
+}
+
+div.poll div.bar div.foreground {
+  
+}
+
+/* Profiles/
+-------------------------------------------------------------- */
+
+.profile .picture {
+  
+}
+
+/* Styles for sub-headings on user profiles */
+
+.profile dt {
+  
+}
+
+/* Homepage - Black background/
+-------------------------------------------------------------- */
+
+body.front,
+.front .page {
+  color: #FFFFFF;
+}
+
+body.front {
+    background: #000;
+}
+
+.front .page {
+    background: url(../images/ucla-lib-blue-striped-background.png) 0 0 repeat;
+}
+
+.front .page a {
+  color: #FFFFFF;
+}
+
+.front .page .block .horizontal-menu li,
+.front .page .block .vertical-menu li {
+  background-color: #000000;
+}
+
+.front .page .block .vertical-menu li a,
+.front .page .block .horizontal-menu li a,
+.front .page .footer ul.menu li a {
+  border-color: #666;
+  color: #FFFFFF;
+}
+
+/* Styles for Homepage Central Area */
+
+.front .main {
+    background-color: #fff;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    padding: 10px;
+}
+
+.front .main .gutter {
+    margin: 0; /*Override gutter spacing*/
+}
+
+.front .main,
+.front .main a {
+    color: #666;
+}
+
+.front .block.content-inner {
+    padding-top: 0;
+}
+
+.front .sidebar-first {
+    float: right;
+}
+
+.front .sidebar-first-inner {
+    border: none;
+    padding: 0;
+    margin-left: 10px;
+    min-height: 0 !important;
+}
+
+.front .sidebar-first .block {
+    margin-bottom: 0;
+}
+
+/* Styles for Feature Spotlight Slideshow */
+
+.view-homepage-feature {
+    border-top: 1px dotted #aaa;
+    border-bottom: 1px dotted #aaa;
+    padding: 8px 2px 2px 2px;
+}
+
+.view-homepage-feature .views-field-title a {
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.views-field-field-spotlight img {
+    width: 100%;
+    height: auto;
+}
+
+.view-homepage-feature .views-slideshow-pager-fields {
+    float: right;
+    margin: 10px 0 5px 0;
+}
+
+.view-homepage-feature .views-slideshow-pager-field-item {
+    cursor: pointer;
+    display: block;
+    float: left;
+    text-indent: 9999em;
+    background: url(../images/spotlight-pager-inactive.png) 0 0 no-repeat;
+    width: 18px;
+    height: 18px;
+    margin-left: 5px;
+    overflow: hidden;
+}
+
+.view-homepage-feature .views-slideshow-pager-field-item.active {
+    background: url(../images/spotlight-pager-active.png) 0 0 no-repeat;
+}
+
+
+/*
+ * UCLA Homepage Tabbed Search Styles
+ */
+
+/* Hide empty homepage feature view page */
+.front .content-group .block-system {
+    display: none;
+}
+
+.block-ucla-tab-search {
+    margin-bottom: 0;
+}
+
+.block-ucla-tab-search form {
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.block-ucla-tab-search .block-title {
+    display: none;
+}
+
+/* UCLA Tabbed Search Vertical Tabs */
+
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list {
+    background-color: #536895;
+    border-top: none;
+    left: 0;
+    width: 12em;
+    margin-left: -13.5em;
+    height: 440px;
+}
+
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list li {
+    background-color: #536895;
+    border: none;
+    border-bottom: 1px dotted #fff;
+    text-align: center;
+}
+
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list li a {
+    font-size: 14px;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list li a strong {
+    font-weight: normal;
+}
+
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list .selected { 
+    background-color: #ffb300;
+    position: relative;
+}
+
+/* Creates a triangle pointing toward the right */
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list .selected:after {
+    content: "";
+    display: block;
+    height: 0;
+    width: 0;
+    position: absolute;
+    top: 50%;
+    right: -12px;
+    margin-top: -8px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 12px solid #ffb300;
+}
+
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list .selected {
+    outline: none;
+}
+
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list li a:link strong,
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list li a:hover strong,
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list li a:active strong,
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list li a:visited strong {
+    text-decoration: none;
+}
+
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list li a,
+.block-ucla-tab-search .vertical-tabs ul.vertical-tabs-list .selected strong {
+    color: #fff;
+    outline: none;
+    text-shadow: 0px 2px 2px #222;
+}
+
+/* UCLA Tabbed Search Main Content Area */
+
+.block-ucla-tab-search .vertical-tabs {
+    background-color: #ebe5d8;
+    border: 1px solid #c8c3b8;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 13.5em;
+}
+
+/* Top Search field */
+.block-ucla-tab-search .vertical-tabs .form-item {
+    margin-top: 0; /* Align with spotlight slideshow image */
+}
+
+.block-ucla-tab-search .vertical-tabs .form-type-textfield input {
+    font-style: italic;
+    font-size: 11px;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    padding: 6px;
+}
+
+/* Blue Search Button */
+.block-ucla-tab-search .form-submit {
+    background: #536895;
+    border: none;
+    color: #fff;
+    font-size: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    padding: 5px 16px;
+    text-shadow: 0px 2px 2px #222;
+}
+
+/* Search form panel */
+.block-ucla-tab-search .vertical-tabs-panes {
+    position: relative;
+    margin: 8px 5px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.block-ucla-tab-search .vertical-tabs .vertical-tabs-pane {
+    padding: 0 5px;
+}
+
+/* Webkit only stylish scrollbar */
+.block-ucla-tab-search .vertical-tabs-panes::-webkit-scrollbar {
+    background: url(../images/search-form-scrollbar-background.png) 0 0 repeat-y;
+    width: 8px;
+}
+
+.block-ucla-tab-search .vertical-tabs-panes::-webkit-scrollbar-thumb {
+    background: #ffb300;
+    border-radius: 8px;
+    width: 8px;
+}
+
+.block-ucla-tab-search .vertical-tabs-panes .form-type-radio {
+    padding-left: 2px;
+}
+
+.block-ucla-tab-search .vertical-tabs-panes .form-radio + label {
+    background: url(../images/search-form-radio-unchecked.png) 1px 2px no-repeat;
+    cursor: pointer;
+    padding: 2px 0 3px 2px;
+    padding-left: 25px;
+    margin-left: -20px;
+}
+
+.block-ucla-tab-search .vertical-tabs-panes .form-radio:checked + label {
+    background: url(../images/search-form-radio-checked.png) 1px 2px no-repeat;
+    font-weight: bold;
+}
+
+.ie8 .block-ucla-tab-search .vertical-tabs-panes .form-radio + label {
+    background: none; /* Expose native radio button for IE8 */
+}
+
+/* Select drop-down field */
+.block-ucla-tab-search .vertical-tabs-panes .form-select {
+    background: transparent;
+    font-size: 11px;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0;
+    outline: none;
+    height: 26px;
+    width: 306px;
+    max-width: none;
+    -webkit-appearance: none;
+}
+
+.block-ucla-tab-search .vertical-tabs-panes .form-type-select  {
+    background: #fff url(../images/search-form-select-down-arrow.png) right no-repeat;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    width: 280px;
+    overflow: hidden;
+}
+
+.ie8 .block-ucla-tab-search .vertical-tabs-panes .form-select {
+    width: 280px;
+}
+
+.ie8 .block-ucla-tab-search .vertical-tabs-panes .form-type-select {
+    background: #fff; /* Expose native select drop-down icon for IE8 */
+}
+
+.block-ucla-tab-search .vertical-tabs-panes .pane-description {
+    background: #fff url(../images/question-mark-yellow-ribbon.png) 320px 0 no-repeat;
+    border-top: 1px solid #536895;
+    margin-top: 10px;
+    padding: 20px 10px;
+    position: relative;
+}
+
+.block-ucla-tab-search .vertical-tabs-panes .pane-description:before {
+    content: "";
+    display: block;
+    height: 0;
+    width: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 18px solid #536895;
+    position: absolute;
+    top: 0px;
+    left: 15px;
+}
+
+.block-ucla-tab-search .vertical-tabs-panes .pane-description:after {
+    content: "";
+    display: block;
+    height: 0;
+    width: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 18px solid #ebe5d8;
+    position: absolute;
+    top: -1px;
+    left: 15px;
+}
+
+
+/* Books Panel */
+.block-ucla-tab-search .vertical-tabs-pane[id|="edit-books"] .form-type-textfield input {
+    width: 280px;
+}
+
+.block-ucla-tab-search .vertical-tabs-pane[id|="edit-books"] .form-submit {
+    border: none;
+    -webkit-box-shadow: 0px 1px 1px #aaa;
+    -moz-box-shadow:    0px 1px 1px #aaa;
+    box-shadow:         0px 1px 1px #aaa;
+    position: absolute;
+    top: 0;
+    left: 295px;
+    margin: 0;
+}
+
+
+/*
+ * UCLA search module styles
+ */
+#block-ucla_search-ucla_search h2 {
+  display:none;
+}
+#ucla-simple-search-custom-form .form-item-search-target {
+    display:inline-block;
+    margin: 0;
+}
+    .ie7 #ucla-simple-search-custom-form .form-item-search-target {
+      zoom: 1;
+      display: inline;
+      margin-right:8px;
+      margin-bottom:1px;      
+    }
+#ucla-simple-search-custom-form .form-item-search-terms {
+    display:inline-block
+  }
+    .ie7 #ucla-simple-search-custom-form .form-item-search-terms {
+	zoom: 1;
+	display: inline;
+	margin-right:8px;
+	margin-bottom:1px;
+      }
+#ucla-simple-search-custom-form .form-item-search-terms label {
+    color: #000000;
+    display:inline-block
+}
+    .ie7 #ucla-simple-search-custom-form .form-item-search-terms label {
+	zoom: 1;
+	display: inline;
+    }
+form#ucla-simple-search-custom-form {
+  background-color: transparent;
+  border-bottom: 0px dashed #333;
+  border-top: 0px dashed #333;
+  margin: 0px;
+}
+    .ie7 form#ucla-simple-search-custom-form {
+      margin-right:195px;
+      margin-top:0px;
+    } 
+form#ucla-simple-search-custom-form .form-item {
+    margin: 0;
+    width:150px;
+}
+.ie8 form#ucla-simple-search-custom-form .form-item {
+    margin: 0 5px 0px 0;
+}
+form#ucla-simple-search-custom-form input.form-submit {
+    cursor: pointer;
+    font-weight: normal;
+    margin: 0px;
+    padding: 1px 5px;
+}
+    .ie7 form#ucla-simple-search-custom-form input.form-submit {
+      margin-top:2px;
+    }
+
+    .ie8 #edit-search-terms.form-text,
+    .ie7 #edit-search-terms.form-text {
+      padding-top:1px;
+    }
+/* Footer Region
+-------------------------------------------------------------- */
+.front .footer-wrapper {
+  border-top: 1px solid #666;
+  padding-top: 10px;
+}
+
+.footer-wrapper {
+  padding-top: 0px;
+}
+.footer-wrapper ul li.leaf.first a,
+#footer2 ul.menu li.leaf.first a {
+   font-size: 15px;
+   font-weight: bold;
+}
+.footer-wrapper ul li.leaf,
+#footer2 ul.menu li.leaf{
+    list-style-image: none;
+    list-style-type: none;
+} 
+.footer {
+  color:#666666;
+  padding:10px 0 20px 0;
+  text-align:right;
+}
+/*
+ * footer columns
+ */
+#footer-wrapper2 {
+    background: #536895 url(../images/ucla-lib-blue-footer-background.png) 0 0 repeat-x;
+    border-top: 2px solid #feb300;
+    margin:0;
+}
+#footer2 .block {
+  display: inline-block;
+  height: 100%;
+  margin: 0;
+  padding: 1% 2%;
+}
+
+#block-menu-menu-footer-col-1,
+#block-menu-menu-footer-col-3,
+#block-menu-menu-footer-col-4 {
+    width: 16%;
+}
+
+#block-menu-menu-footer-col-2 {
+    width: 36%;
+    background-color: #44567b;
+}
+
+#footer2 .block .inner,
+#footer2 .menu {
+  margin-left: 0;
+}
+
+#footer2 ul li a{
+  color: #fff;
+  font-size:12px;
+  text-decoration:none;
+}
+#footer2 ul li a:hover{
+  text-decoration:underline;
+}
+
+#footer-wrapper3 {
+  background-color: #000;
+  padding-bottom: 80px;
+}
+
+.footer3 {
+  padding:10px 0 0px 0;
+  text-align:right;
+}
+.footer3 .block-menu-menu-footer {
+  text-align:center;
+}
+.footer3 ul li { 
+  display:inline;
+  padding:0;
+  margin:5px 0px 0 5px;
+}
+.footer #block-menu-menu-footer {
+  margin:0;
+}
+
+.footer3 .block-menu ul.menu li a {
+  color: #999;
+  font-size: 10px;
+  text-decoration: none;
+}
+
+.footer3 .block-menu ul.menu li a:hover {
+  text-decoration: underline;
+}
+
+#footer3-inner ul.menu {
+  text-align:center;
+}
+#footer2-inner ul {
+    margin-bottom:1em;
+}

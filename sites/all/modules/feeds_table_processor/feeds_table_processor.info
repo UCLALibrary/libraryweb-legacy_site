@@ -1,0 +1,7 @@
+name = Feeds table processor
+description = Provides a generic table processor for feeds.
+package = Feeds
+dependencies[] = feeds
+core = 7.x
+
+files[] = FeedsTableProcessor.inc
