@@ -121,9 +121,9 @@ $handler->display->display_options['filters']['search_target']['group_info']['la
 $handler->display->display_options['filters']['search_target']['group_info']['identifier'] = 'search_target';
 $handler->display->display_options['filters']['search_target']['group_info']['group_items'] = array(
   1 => array(
-    'title' => 'Site',
+    'title' => 'Articles',
     'operator' => '=',
-    'value' => 'site',
+    'value' => 'articles',
   ),
   2 => array(
     'title' => 'Catalog',
@@ -131,14 +131,34 @@ $handler->display->display_options['filters']['search_target']['group_info']['gr
     'value' => 'catalog',
   ),
   3 => array(
+    'title' => 'Databases',
+    'operator' => '=',
+    'value' => 'database',
+  ),
+  4 => array(
     'title' => 'LibGuides',
     'operator' => '=',
     'value' => 'guides',
   ),
-  4 => array(
+  5 => array(
     'title' => 'Melvyl',
     'operator' => '=',
     'value' => 'melvyl',
+  ),
+  6 => array(
+    'title' => 'OAC',
+    'operator' => '=',
+    'value' => 'oac',
+  ),
+  7 => array(
+    'title' => 'SFX',
+    'operator' => '=',
+    'value' => 'sfx',
+  ),
+  8 => array(
+    'title' => 'Site',
+    'operator' => '=',
+    'value' => 'site',
   ),
 );
 
