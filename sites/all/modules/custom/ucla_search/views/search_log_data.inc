@@ -31,7 +31,6 @@ $handler->display->display_options['style_options']['columns'] = array(
   'search_date' => 'search_date',
   'search_target' => 'search_target',
   'search_terms' => 'search_terms',
-  'browser_ip' => 'browser_ip',
 );
 $handler->display->display_options['style_options']['default'] = '-1';
 $handler->display->display_options['style_options']['info'] = array(
@@ -50,13 +49,6 @@ $handler->display->display_options['style_options']['info'] = array(
     'empty_column' => 0,
   ),
   'search_terms' => array(
-    'sortable' => 0,
-    'default_sort_order' => 'asc',
-    'align' => '',
-    'separator' => '',
-    'empty_column' => 0,
-  ),
-  'browser_ip' => array(
     'sortable' => 0,
     'default_sort_order' => 'asc',
     'align' => '',
@@ -88,10 +80,6 @@ $handler->display->display_options['fields']['search_target']['field'] = 'search
 $handler->display->display_options['fields']['search_terms']['id'] = 'search_terms';
 $handler->display->display_options['fields']['search_terms']['table'] = 'ucla_search_log';
 $handler->display->display_options['fields']['search_terms']['field'] = 'search_terms';
-/* Field: Search data: Browser IP */
-$handler->display->display_options['fields']['browser_ip']['id'] = 'browser_ip';
-$handler->display->display_options['fields']['browser_ip']['table'] = 'ucla_search_log';
-$handler->display->display_options['fields']['browser_ip']['field'] = 'browser_ip';
 /* Field: Search data: Search Form */
 $handler->display->display_options['fields']['search_form']['id'] = 'search_form';
 $handler->display->display_options['fields']['search_form']['table'] = 'ucla_search_log';
@@ -133,9 +121,9 @@ $handler->display->display_options['filters']['search_target']['group_info']['la
 $handler->display->display_options['filters']['search_target']['group_info']['identifier'] = 'search_target';
 $handler->display->display_options['filters']['search_target']['group_info']['group_items'] = array(
   1 => array(
-    'title' => 'Site',
+    'title' => 'Articles',
     'operator' => '=',
-    'value' => 'site',
+    'value' => 'articles',
   ),
   2 => array(
     'title' => 'Catalog',
@@ -143,14 +131,34 @@ $handler->display->display_options['filters']['search_target']['group_info']['gr
     'value' => 'catalog',
   ),
   3 => array(
+    'title' => 'Databases',
+    'operator' => '=',
+    'value' => 'database',
+  ),
+  4 => array(
     'title' => 'LibGuides',
     'operator' => '=',
     'value' => 'guides',
   ),
-  4 => array(
+  5 => array(
     'title' => 'Melvyl',
     'operator' => '=',
     'value' => 'melvyl',
+  ),
+  6 => array(
+    'title' => 'OAC',
+    'operator' => '=',
+    'value' => 'oac',
+  ),
+  7 => array(
+    'title' => 'SFX',
+    'operator' => '=',
+    'value' => 'sfx',
+  ),
+  8 => array(
+    'title' => 'Site',
+    'operator' => '=',
+    'value' => 'site',
   ),
 );
 
