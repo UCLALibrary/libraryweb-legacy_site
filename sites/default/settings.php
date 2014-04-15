@@ -465,8 +465,10 @@ $env_include = array (
   'www-stage1.library.ucla.edu' => 'stage.settings.php',
   'www-stage2.library.ucla.edu' => 'stage.settings.php',
   'www.library.ucla.edu' => 'prod.settings.php',
+  'library.ucla.edu' => 'prod.settings.php',
   'www-prod1.library.ucla.edu' => 'prod.settings.php',
   'www-prod2.library.ucla.edu' => 'prod.settings.php',
+  'www-prod3.library.ucla.edu' => 'prod.settings.php',
 );
 
 if (isset($env_include[$_SERVER['HTTP_HOST']])) {
