@@ -63,6 +63,7 @@ function ucla_simple_search_custom_form_submit($form, &$form_state) {
 
   // Put form info into array expected by search logger / handlers
   $search_info = array (
+    'search_code' => 'GKEY^*',
     'search_target' => $search_target,
     'search_terms' => $search_terms,
     'search_date' => $search_date,
