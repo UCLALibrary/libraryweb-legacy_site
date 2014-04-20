@@ -164,7 +164,7 @@ curl_close ($ch);
 $form['books']['ucla_catalog_search_index'] = array(
     '#type' => 'select',
     '#options' => array(
-        'GKEY^' => t('Keyword'),
+        'GKEY^*' => t('Keyword'),
         'TKEY^' => t('Title'),
         'TAL2' => t('Title - start of'),
         'TKEY' => t('Title phrase'),
@@ -193,10 +193,10 @@ $form['books']['ucla_catalog_search_index'] = array(
   $form['books']['catalog'] = array(
     '#type' => 'radios',
     '#options' => array(
-        'BM-Mel' => t('Melvyl UC Catalog (+selected articles)'),
         'BM-CAT' => t('UCLA Library Catalog'),
+        'BM-Mel' => t('Melvyl UC Catalog (+selected articles)'),
     ),
-    '#default_value' => 'BM-Mel',
+    '#default_value' => 'BM-CAT',
   );
   $form['books']['catalog_container_mel'] = array(
     '#type' => 'container',

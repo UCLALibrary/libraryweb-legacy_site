@@ -51,7 +51,7 @@ function ucla_search_catalog($search_info) {
   if ($search_info['search_code']) {
     $extra_params .= $search_info['search_code'];
   } else {
-    $extra_params .= 'GKEY^';
+    $extra_params .= 'GKEY^*';
   }
   $extra_params .= '&searchType=1';
   // Replace space with plus, but do NOT url encode the terms
