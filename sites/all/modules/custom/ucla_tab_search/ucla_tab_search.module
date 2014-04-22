@@ -186,17 +186,13 @@ $form['books']['ucla_catalog_search_index'] = array(
   );
 // end moving keyword block
 
-
-
-
-
   $form['books']['catalog'] = array(
     '#type' => 'radios',
     '#options' => array(
-        'BM-CAT' => t('UCLA Library Catalog'),
         'BM-Mel' => t('Melvyl UC Catalog (+selected articles)'),
+        'BM-CAT' => t('UCLA Library Catalog'),
     ),
-    '#default_value' => 'BM-CAT',
+    '#default_value' => 'BM-Mel',
   );
   $form['books']['catalog_container_mel'] = array(
     '#type' => 'container',
