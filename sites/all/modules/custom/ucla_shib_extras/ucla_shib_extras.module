@@ -12,9 +12,9 @@ function ucla_shib_extras_user_insert(&$edit, $account, $category) {
   // At this point, $account has been created and $account->uid is valid.
 
   // Do the following only if certain HTTP headers are set by Shibboleth
-  if ( !empty($_SERVER['HTTP_SN']) && !empty($_SERVER['HTTP_GIVENNAME']) ) {
-    // Create full name with HTTP_GIVENNAME (first name) and HTTP_SN (last name).
-    $new_full_name = $_SERVER['HTTP_GIVENNAME'] . '|||' . $_SERVER['HTTP_SN'];
+  if ( !empty($_SERVER['HTTP_SHIBSN']) && !empty($_SERVER['HTTP_SHIBGIVENNAME']) ) {
+    // Create full name with HTTP_SHIBGIVENNAME (first name) and HTTP_SHIBSN (last name).
+    $new_full_name = $_SERVER['HTTP_SHIBGIVENNAME'] . '|||' . $_SERVER['HTTP_SHIBSN'];
 
     // Set new value for the full name
     $edit['field_user_full_name']['und'][0]['value'] = $new_full_name;

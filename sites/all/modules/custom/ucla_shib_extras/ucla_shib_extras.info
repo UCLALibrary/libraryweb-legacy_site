@@ -1,4 +1,4 @@
 name = UCLA Shibboleth Extras
 description = Provides access to extra attributes not supported by the shib_auth module.
 core = 7.x
-version = "7.x-1.0"
+version = "7.x-1.1"
