@@ -138,9 +138,7 @@ function ccle_redirect_list() {
                     $class_guides[$i][4] = $rd_crs[$i];
                 } elseif ( strlen( $rd_subj[$i] ) > 0 ) {
                     $class_guides[$i][4] = $rd_subj[$i];
-                } else {
-                    drupal_goto( $path = 'http://guides.library.ucla.edu' ); // this may not be needed, below may be enough
-                }
+                } 
 
                 if( isset( $class_guides[$i][5] ) ){
                     if( strlen( $class_guides[$i][5] ) == 0 ){
