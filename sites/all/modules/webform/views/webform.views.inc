@@ -47,6 +47,26 @@ function webform_views_data() {
     'help' => t('Submissions generated from Webform forms.'),
   );
 
+  // Serial number.
+  $data['webform_submissions']['serial'] = array(
+    'title' => t('Serial number'),
+    'help' => t('The serial number of the submission.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'title' => t('Serial number'),
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+
   // SID.
   $data['webform_submissions']['sid'] = array(
     'title' => t('Sid'),
@@ -132,6 +152,9 @@ function webform_views_data() {
     ),
     'sort' => array(
       'handler' => 'views_handler_sort_date',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_date',
     ),
   );
 
@@ -389,6 +412,21 @@ function webform_views_handlers() {
 }
 
 /**
+ * Implements hook_views_plugins().
+ */
+function webform_views_plugins() {
+  $plugins['row']['webform_submission'] = array(
+    'title' => t('Rendered submissions'),
+    'help' => t('Display the rendered submission'),
+    'handler' => 'webform_views_plugin_row_submission_view',
+    'base' => array('webform_submissions'),
+    'uses options' => TRUE,
+    'type' => 'normal',
+  );
+  return $plugins;
+}
+
+/**
  * Menu callback; Provide a list of Webform nodes for use in autocomplete.
  */
 function webform_views_autocomplete($string = '') {
@@ -462,7 +500,6 @@ function _webform_views_options_form(&$form, &$form_state, $nid, $cid) {
     '#type' => 'select',
     '#options' => $options,
     '#default_value' => $cid,
-    '#dependency' => array('edit-options-component-type' => array($type)),
     '#access' => count($components),
     '#description' => t('Select the component whose values should be made available.'),
   );
