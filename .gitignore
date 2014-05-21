@@ -1,5 +1,8 @@
-# Ignore configuration files that may contain sensitive information.
-sites/*/*.settings.php
+# Ignore configuration files which include database credentials
+sites/*/*.settings-db.php
+
+# Allow developers to have their own dev settings files
+sites/*/dev.settings.php
 
 # Ignore paths that contain user-generated content.
 sites/*/files
