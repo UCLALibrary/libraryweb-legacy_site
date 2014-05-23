@@ -22,10 +22,10 @@ function clicc_hours_help($path, $args) {
  * Implements hook_block_info().
  */
 function clicc_hours_block_info() {
-  $blocks = array();
   
   $blocks['hours'] = array(
     'info' => t('CLICC Hours'),
+    'cache'=> DRUPAL_CACHE_PER_ROLE,
   );
   
   return $blocks;
@@ -57,7 +57,8 @@ function clicc_hours_block_view($delta = '') {
  * @return string
  *  HTML output.
  */
-function get_hours() {		
+function get_hours() {
+		
 	// Library Units
 		$units_arr = array(
 			'CLICC Lab' => 54, // CLICC Lab
@@ -70,7 +71,7 @@ function get_hours() {
 			'Music' => 16, // Music Laptop
 			'Biomedical' => 1, // Biomed Laptop
 			'EMS' => 25, // SEL EMS Laptop
-			'GEO' => 24,// SEL GEO Laptop
+			'GEO' => 26,// SEL GEO Laptop
 		);
 		
 		$basic_url = 'http://webservices.library.ucla.edu/libservices/hours/unit/';
@@ -100,11 +101,11 @@ function get_hours() {
 		
 		// Today's date
 		date_default_timezone_set('UTC');
-		$today = date('l, F jS, Y');
+		$today = date('l, F jS, Y');//Day Mon-2nd-14
 		$day = '';
 		
 		// Alias for today's date
-		switch (date('N')) {
+		switch (date('N')) { //1=Monday, 2=Tuesday, etc.
 			case 7:	
 				$day = 'sun';
 				break;
@@ -122,6 +123,7 @@ function get_hours() {
 				break;
 		}
 		
+		//$note=$day . 'Note';
 		$closed = $day . 'Closed';
 		$opens = $day . 'Opens';
 		$closes = $day . 'Closes';
@@ -130,8 +132,31 @@ function get_hours() {
 		$hours = array();
 		
 			// CLICC Lab
-			if (is_closed($lab->$closed)) $hours['Lab'] = 'Closed';	
-			else $hours['Lab'] = format_time($lab->$opens, $lab->$closes);
+			// Check for date range, 24 hrs for lab week3-final
+			/*seems redundant to use json_decode again, but return empty string if use $note=$lab->$sunNote
+			  or $note=$lab['sunNote'];*/
+			  
+            $note= json_decode(file_get_contents("http://webservices.library.ucla.edu/libservices/hours/unit/54"), true);
+            $note_detail= $note['unitSchedule']['sunNote'];
+			$startDate=substr($note_detail, 0,  4);
+			$endDate=substr($note_detail, 7, 4);   
+			if (is_closed($lab->$closed))  
+			    $hours['Lab'] = 'Closed';	
+			else if (isDateInRange($today,$startDate,$endDate)){
+					switch ($closed) {
+						case 'monThursClosed':
+							$hours['Lab'] = '24 hours';
+							break;
+						case 'satClosed':
+					    case 'friClosed':
+					       $hours['Lab'] = format_time($lab->$opens, $lab->$closes);
+					       break;
+					    case 'sunClosed':
+					         $hours['Lab'] = '1:00 PM - 24 hours';
+					       }
+					       }
+		    else if (!isDateInRange($today))$hours['Lab'] = format_time($lab->$opens, $lab->$closes);
+		
 			
 			// CLICC Classrooms
 			if (is_closed($classrooms->$closed)) $hours['Classrooms'] = 'Closed';
@@ -193,6 +218,9 @@ function get_hours() {
 			next($hoursLaptopsArr);
 		}
 		$html .= "</table>";
+		
+	
+		
 		// Table Markup 
 		/*$output .= "<table id=\lib_hours\" cellpadding=\"2\">";
 			$output .= "<thead>";
@@ -242,15 +270,48 @@ function get_hours() {
 			$output .= "</tbody>";
 		$output .= "</table>";
 		*/
+		
+		
 		return $html;
+		
+		
 }
+
+
+
+
+
+
+//Try out, Check the time if clicc lab is 24 hrs before convert the date
+/*function isDateInRange($now){
+    $startDate = '4/26';
+    $endDate = '6/12';
+    $startT = strtotime($startDate);
+    $endT = strtotime($endDate);
+    $userT = strtotime($now);
+    if (($userT >= $startT) &&($userT <= $endT)) return true;
+    return false;
+  }
+  */
+  
+  
+function isDateInRange($now, $startDate,$endDate){
+    
+    $startT = strtotime($startDate);
+    $endT = strtotime($endDate);
+    $userT = strtotime($now);
+    if (($userT >= $startT) &&($userT <= $endT)) return true;
+    return false;}
+
+
 
 function format_time($open, $close) {
 	if (!strcmp($open, $close)) return '24 hours';	// strcmp returns 0 for equal strings
-	return strftime('%l:%M %P', strtotime(substr($open, strpos($open, 'T')+1, 5))) . '-' . 	strftime('%l:%M %P', strtotime(substr($close, strpos($close, 'T')+1, 5)));
+	return strftime('%l:%M %p', strtotime(substr($open, strpos($open, 'T')+1, 5))) . '-' . 	strftime('%l:%M %p', strtotime(substr($close, strpos($close, 'T')+1, 5)));
 }
 
+ 
 function is_closed($data) {
 	if (!strcmp('true', $data)) return true;	// strcmp returns 0 for equal strings
-	return false;
+    return false;
 }
