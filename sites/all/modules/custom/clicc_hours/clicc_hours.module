@@ -67,11 +67,11 @@ function get_hours() {
 			// Laptop Lending
 			'College' => 47, // College Laptop
 			'Research' => 48, // Research Laptop
-			'Arts' => 5, // Arts Laptop
-			'Music' => 16, // Music Laptop
-			'Biomedical' => 1, // Biomed Laptop
-			'EMS' => 25, // SEL EMS Laptop
-			'GEO' => 26,// SEL GEO Laptop
+			'Arts' => 49, // Arts Laptop
+			'Music' => 50, // Music Laptop
+			'Biomedical' => 51, // Biomed Laptop
+			'EMS' => 52, // SEL EMS Laptop
+			'GEO' => 53,// SEL GEO Laptop
 		);
 		
 		$basic_url = 'http://webservices.library.ucla.edu/libservices/hours/unit/';
@@ -152,10 +152,10 @@ function get_hours() {
 					       $hours['Lab'] = format_time($lab->$opens, $lab->$closes);
 					       break;
 					    case 'sunClosed':
-					         $hours['Lab'] = '1:00 PM - 24 hours';
+					    	$hours['Lab'] = format_timeSun($lab->$opens);
 					       }
 					       }
-		    else if (!isDateInRange($today))$hours['Lab'] = format_time($lab->$opens, $lab->$closes);
+		    else  $hours['Lab'] = format_time($lab->$opens, $lab->$closes);
 		
 			
 			// CLICC Classrooms
@@ -303,6 +303,10 @@ function isDateInRange($now, $startDate,$endDate){
     if (($userT >= $startT) &&($userT <= $endT)) return true;
     return false;}
 
+//Format of lab time for Sunday after week 3
+function format_timeSun($open) {
+	return strftime('%l:%M %p', strtotime(substr($open, strpos($open, 'T')+1, 5))) . '- 24 hours';
+	}
 
 
 function format_time($open, $close) {
