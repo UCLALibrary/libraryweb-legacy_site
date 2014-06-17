@@ -51,6 +51,9 @@ function isSurveyTime() {
 	,	[Date.parse("Apr 08 2014 16:00 PDT"), Date.parse("Apr 08 2014 18:00 PDT")]
 	,	[Date.parse("May 23 2014 08:00 PDT"), Date.parse("May 23 2014 10:00 PDT")]
 	,	[Date.parse("Jun 19 2014 15:00 PDT"), Date.parse("Jun 19 2014 17:00 PDT")]
+	,	[Date.parse("Jul 23 2014 15:00 PDT"), Date.parse("Jul 23 2014 17:00 PDT")]
+	,	[Date.parse("Aug 25 2014 13:00 PDT"), Date.parse("Aug 25 2014 15:00 PDT")]
+	,	[Date.parse("Sep 10 2014 11:00 PDT"), Date.parse("Sep 10 2014 13:00 PDT")]
 	];
 	var now = new Date().getTime();
 	for (var testTime in testTimes) {
