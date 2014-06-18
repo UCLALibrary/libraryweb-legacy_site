@@ -4,9 +4,9 @@ core = "7.x"
 version = "7.x-1.0"
 package = "Other"
 
-; Information added by Drupal.org packaging script on 2014-05-30
+; Information added by Drupal.org packaging script on 2014-06-16
 version = "7.x-1.x-dev"
 core = "7.x"
 project = "orcid_integration"
-datestamp = "1401469627"
+datestamp = "1402960131"
 

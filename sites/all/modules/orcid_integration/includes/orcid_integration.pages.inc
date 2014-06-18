@@ -25,6 +25,12 @@ function orcid_integration_view_page($account) {
 function orcid_integration_map_account($form, &$form_state, $account) {
   $possible_accounts = orcid_integration_search_account($account);
   $options = array();
+
+  $form['account'] = array(
+    '#type' => 'value',
+    '#value' => $account,
+  );
+
   $form['existing'] = array(
     '#type' => 'fieldset',
     '#title' => t('Claim existing account'),
@@ -73,40 +79,38 @@ function orcid_integration_map_account($form, &$form_state, $account) {
     '#value' => t('Map'),
   );
 
-  $form['create'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Create'),
-    '#description' => t('Use this section to create a new ORCID and associate with your account'),
-    '#collapsed' => FALSE,
-  );
-  $form['create']['first_name'] = array(
-    '#title' => t('First Name'),
-    '#type' => 'textfield',
-    '#description' => t('Please enter your first name.'),
-    '#required' => FALSE,
-  );
-  $form['create']['last_name'] = array(
-    '#title' => t('Last Name'),
-    '#type' => 'textfield',
-    '#description' => t('Please enter your first name.'),
-    '#required' => FALSE,
-  );
-  $form['create']['email'] = array(
-    '#type' => 'textfield',
-    '#title' => t('EMail'),
-    '#default_value' => $account->mail,
-    '#attributes' => array(
-      // 'disabled' => TRUE,
-    ),
-  );
-  $form['account'] = array(
-    '#type' => 'value',
-    '#value' => $account,
-  );
-  $form['create']['save'] = array(
-    '#type' => 'submit',
-    '#value' => t('Create'),
-  );
+  if (variable_get('orcid_integration_members_api_url', '') !== '') {
+    $form['create'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Create'),
+      '#description' => t('Use this section to create a new ORCID and associate with your account'),
+      '#collapsed' => FALSE,
+    );
+    $form['create']['first_name'] = array(
+      '#title' => t('First Name'),
+      '#type' => 'textfield',
+      '#description' => t('Please enter your first name.'),
+      '#required' => FALSE,
+    );
+    $form['create']['last_name'] = array(
+      '#title' => t('Last Name'),
+      '#type' => 'textfield',
+      '#description' => t('Please enter your first name.'),
+      '#required' => FALSE,
+    );
+    $form['create']['email'] = array(
+      '#type' => 'textfield',
+      '#title' => t('EMail'),
+      '#default_value' => $account->mail,
+      '#attributes' => array(
+        // 'disabled' => TRUE,
+      ),
+    );
+    $form['create']['save'] = array(
+      '#type' => 'submit',
+      '#value' => t('Create'),
+    );
+  }
   
   return $form;
 }
