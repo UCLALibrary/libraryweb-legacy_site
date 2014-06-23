@@ -19,7 +19,6 @@ function orcid_integration_menu() {
     'page arguments' => array('orcid_integration_services_configuration'),
     'access arguments' => array('administer site configuration'),
     'file' => 'includes/orcid_integration.admin.inc',
-    'type' => MENU_LOCAL_TASK,
   );
   
   $items['user/%user/orcid'] = array(
