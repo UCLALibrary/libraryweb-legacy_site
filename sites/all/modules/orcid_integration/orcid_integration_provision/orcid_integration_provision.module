@@ -174,4 +174,3 @@ function _orcid_integration_provision_sanitize_csv($csv_data) {
   }
   return $data;
 }
-
