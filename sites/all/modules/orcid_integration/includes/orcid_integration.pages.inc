@@ -23,8 +23,11 @@ function orcid_integration_view_page($account) {
  * Displays a creation/mapping account form.
  */
 function orcid_integration_map_account($form, &$form_state, $account) {
-  $possible_accounts = orcid_integration_search_account($account);
-  $options = array();
+  $search_account = clone $account;
+  if (!empty($form_state['values']['orcid_email'])) {
+    $search_account->mail = $form_state['values']['orcid_email'];
+  }
+  $possible_accounts = orcid_integration_search_account($search_account);
 
   $form['account'] = array(
     '#type' => 'value',
@@ -64,16 +67,45 @@ function orcid_integration_map_account($form, &$form_state, $account) {
     '#title' => t('Possible matches'),
     '#collapsed' => FALSE,
   );
+  $form['mapping']['search_ajax'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Search'),
+    '#collapsed' => FALSE,
+  );
+  $form['mapping']['search_ajax']['orcid_email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Email'),
+    '#description' => t('Enter an email to change the search parameters'),
+    '#default_value' => $search_account->mail,
+    '#ajax' => array(
+      'callback' => 'orcid_integration_ajax_search_orcid_callback',
+      'wrapper' => 'orcid-map-options',
+      'method' => 'replaceWith',
+      'effect' => 'fade',
+    ),
+  );
+
   foreach ($possible_accounts['orcid-search-results']['orcid-search-result'] as $key => $result) {
-    $link = l($result['orcid-profile']['orcid-bio']['personal-details']['given-names']['value'], variable_get('orcid_integration_main_url', 'http://sandbox.orcid.org/') . "/{$result['orcid-profile']['orcid-identifier']['path']}", array('attributes' => array('target' => '_blank')));
     $options[$result['orcid-profile']['orcid-identifier']['path']] = _orcid_integration_generate_output_from_orcid_array($result);
   }
-  $form['mapping']['mapping_options'] = array(
-    '#type' => 'radios',
-    '#title' => t('Match'),
-    '#description' => t('Check the orcid id if it is your match.'),
-    '#options' => $options,
-  );
+  if (!empty($options)) {
+    $form['mapping']['mapping_options'] = array(
+      '#type' => 'radios',
+      '#title' => t('Match'),
+      '#description' => t('Check the orcid id if it is your match.'),
+      '#options' => $options,
+      '#prefix' => '<div id="orcid-map-options">',
+      '#suffix' => '</div>',
+    );
+  }
+  else {
+    $form['mapping']['mapping_options'] = array(
+      '#type' => 'markup',
+      '#markup' => t('There are no existing orcids that match your email. Use the search to hopefully get more options'),
+      '#prefix' => '<div id="orcid-map-options">',
+      '#suffix' => '</div>',
+    );
+  }
   $form['mapping']['map'] = array(
     '#type' => 'submit',
     '#value' => t('Map'),

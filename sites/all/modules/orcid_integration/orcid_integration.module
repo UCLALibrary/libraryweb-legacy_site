@@ -324,3 +324,10 @@ function orcid_integration_ajax_validate_orcid_callback($form, $form_state) {
   $form['existing']['info']['#markup'] = $output;
   return $form['existing']['info'];
 }
+
+/**
+ * Validates orcid id via ajax.
+ */
+function orcid_integration_ajax_search_orcid_callback($form, $form_state) {
+  return $form['mapping']['mapping_options'];
+}

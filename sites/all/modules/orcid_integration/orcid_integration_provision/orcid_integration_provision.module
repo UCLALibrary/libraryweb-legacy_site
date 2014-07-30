@@ -50,6 +50,7 @@ function orcid_integration_provision_import_user($data, &$context) {
   $account = NULL;
   $claimed = TRUE;
   $conflict = FALSE;
+  $conflict_orcids = array();
   if (!empty($data['username'])) {
     $account = user_load_by_name($data['username']);
   }
@@ -74,9 +75,12 @@ function orcid_integration_provision_import_user($data, &$context) {
           foreach ($orcid_account['orcid-profile']['orcid-bio']['contact-details']['email'] as $email) {
             if ($email['value'] == $account->mail) {
               if (!empty($orcid)) {
-                $orcid = null;
+                if (empty($conflict_orcids)) {
+                  $conflict_orcids[] = $orcid;
+                }
+                $conflict_orcids[] = $orcid_account['orcid-profile']['orcid-identifier']['path'];
                 $conflict = TRUE;
-                break 3;
+                break 2;
               }
               else {
                 $orcid = $orcid_account['orcid-profile']['orcid-identifier']['path'];
@@ -87,6 +91,10 @@ function orcid_integration_provision_import_user($data, &$context) {
         }
       }
     }
+    if (!empty($conflict)) {
+      $orcid = NULL;
+    }
+
     $account->mail = $original_mail;
     // Claim account if same email exists and there were no conflicts.
     if (empty($orcid) && !$conflict) {
@@ -118,6 +126,7 @@ function orcid_integration_provision_import_user($data, &$context) {
     $context['results']['orcid-results']['conflict'][] = array(
       'username' => $account->name,
       'email' => $account->mail,
+      'conflicts' => '"' . implode(', ', $conflict_orcids) . '"',
     );
   }
 }
@@ -139,9 +148,9 @@ function orcid_integration_provision_import_finished($success, $results, $operat
   $content .= '</table>';
   drupal_set_message($content);
   drupal_set_message(t('Below list in table format of accounts with conflicts (multiple ORCIDs):'));
-  $content = '<table><tr><th>username</th><th>email</th></tr>';
+  $content = '<table><tr><th>username</th><th>email</th><th>conflicts</th></tr>';
   foreach ($results['orcid-results']['conflict'] as $result) {
-    $content .= "<tr><td>{$result['username']}</td><td>{$result['email']}</td></tr>";
+    $content .= "<tr><td>{$result['username']}</td><td>{$result['email']}</td><td>{$result['conflicts']}</td></tr>";
   }
   $content .= '</table>';
   drupal_set_message($content);

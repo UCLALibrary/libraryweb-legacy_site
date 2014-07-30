@@ -43,6 +43,7 @@ function orcid_integration_provision_drush_provision_users($filepath = '') {
 
   $file = file_get_contents($filepath);
   $content = new parseCSV($file);
+  $data = _orcid_integration_provision_sanitize_csv($content->data);
 
   $batch = array(
     'operations' => array(),
@@ -53,8 +54,8 @@ function orcid_integration_provision_drush_provision_users($filepath = '') {
     'error_message' => t('An error occurred processing a user.'),
   );
   $operations = array();
-  foreach ($content->data as $data) {
-    $batch['operations'][] = array('orcid_integration_provision_import_user', array($data));
+  foreach ($data as $data_entry) {
+    $batch['operations'][] = array('orcid_integration_provision_import_user', array($data_entry));
   }
   batch_set($batch);
   $batch =& batch_get();
@@ -76,10 +77,10 @@ function orcid_integration_provision_drush_provision_users_import_finished($succ
     $content .= "\n{$result['username']},{$result['orcid']}";
   }
   drupal_set_message($content);
-  drupal_set_message(t('Below list in format for csv of provisioned new ORCIDs:'));
+  drupal_set_message(t('Below list in format for csv of accounts with multiple ORCIDs:'));
   $content = 'username,email';
   foreach ($results['orcid-results']['conflict'] as $result) {
-    $content .= "\n{$result['username']},{$result['email']}";
+    $content .= "\n{$result['username']},{$result['email']},{$result['conflicts']}";
   }
   drupal_set_message($content);
 }

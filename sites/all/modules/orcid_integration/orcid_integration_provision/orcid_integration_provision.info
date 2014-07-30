@@ -5,9 +5,9 @@ version = "7.x-1.0"
 package = "Other"
 dependencies[] = orcid_integration
 files[] = parsecsv/parsecsv.lib.php
-; Information added by Drupal.org packaging script on 2014-07-01
+; Information added by Drupal.org packaging script on 2014-07-02
 version = "7.x-1.x-dev"
 core = "7.x"
 project = "orcid_integration"
-datestamp = "1404248930"
+datestamp = "1404283428"
 
