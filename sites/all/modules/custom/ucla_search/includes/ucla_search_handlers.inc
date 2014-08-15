@@ -15,9 +15,6 @@ function ucla_search_route_search($search_info) {
     case "catalog":
       ucla_search_catalog($search_info);
       break;
-    case "reserves":
-      ucla_search_reserves($search_info);
-      break;
     case "articles":
       serial_solutions_360($search_info);
       break;
@@ -58,34 +55,6 @@ function ucla_search_catalog($search_info) {
   $target_url .= str_replace(' ', '+', $search_info['search_terms']);
   // Extra params must be after the search terms in the URL
   $target_url .= $extra_params;
-  drupal_goto($path = $target_url);
-}
-
-function ucla_search_reserves($search_info) {
-  if( $search_info['search_inst'] == 'Any' ){
-    $search_inst = '';
-  } else {
-    $search_inst = rawurlencode( $search_info['search_inst'] );
-  }
-  if( $search_info['search_dept'] == 'Any' ){
-    $search_dept = '';
-  } else {
-    $search_dept = rawurlencode( $search_info['search_dept'] );
-  }
-  if( $search_info['search_crse'] == 'Any' ){
-    $search_crse = '';
-  } else {
-    $search_crse = rawurlencode( $search_info['search_crse'] );
-  }
-
-  $base_url = 'http://catalog.library.ucla.edu/cgi-bin/Pwebrecon.cgi';
-  $target_url = 'http://catalog.library.ucla.edu/cgi-bin/Pwebrecon.cgi?DB=local&INST=';
-  $target_url .= $search_inst;
-  $target_url .= '&DEPT=';
-  $target_url .= $search_dept;
-  $target_url .= '&CRSE=';
-  $target_url .= $search_crse;
-  $target_url .= '&CNT=50';
   drupal_goto($path = $target_url);
 }
 
