@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * Implements hook_redirect_alter().
+ * Adapted from: https://www.drupal.org/node/1331582
+ * Implemented for DRUP-581.
+ *
+ * Could be made more specific by checking for 'orcid' in redirect.
+ */
+function orcid_redirect_redirect_alter(&$redirect) {
+  global $user;
+  if (! empty($redirect->redirect) && strpos($redirect->redirect, '[user:') !== FALSE) {
+    // User should already be logged in, via Shibboleth, but double-check
+    // and send through login page if necessary.
+    if (! user_is_logged_in()) {
+      $redirect->redirect = 'user/login';
+      $redirect->redirect_options['query'] = array('destination' => $redirect->source);
+    } else {
+      // Logged in, send to user-specific target page via tokens already in redirect
+      $redirect->redirect = token_replace($redirect->redirect, array('user' => $user));
+    }
+  }
+}
+

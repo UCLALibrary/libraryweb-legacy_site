@@ -58,9 +58,15 @@ function clicc_homepage_block_contents($delta) {
 			<h2>CLICC Lab/Commons</h2>
 			<h6>145 Powell Library Building</h6>
 			<p>The College Library Instructional Computing Commons (CLICC) offers students 100 workstations, instructional software, printers and helpful staff.</p>
-			<p>The times below display the earliest time you may reserve a spot for Powell study rooms, YRL study rooms, and YRL study pods. Reserve by clicking on the links below.</p>
+			
 			<div id="home-study-room-availability">
-				<h3>Group Study Spaces</h3>';
+				<h3>Group Study Spaces</h3>
+				<p>The times below display the earliest time you may reserve a study space for Powell study rooms, YRL study rooms, and YRL study pods in 30 min, 60 min, 90 min and 120 min periods.</font></p>
+				<h6>Earliest Available Time</h6>
+				<p style ="line-height:70%"><font size="2">Reserve by clicking on the avaliable time or location below.</font></p>';
+	
+	
+	
 	// Powell and YRL Availability dynamic content: Displays whether or not study rooms in Powell and YRL are available
 				$powSchedule = new Schedule("Powell");
 				$pow30 = $powSchedule->nextOpenReservationTarget(1);
@@ -84,7 +90,10 @@ function clicc_homepage_block_contents($delta) {
 				}
 				$html .= "Half hour time: $currentTimeInHalfHours <br>";
 				$html .= debugSpaceArr("Powell");*/
-	$html .= '
+	
+	
+	//Original code
+	/*$html .= '
 		<h4><a href="http://www.library.ucla.edu/reservations/powell" target="_blank">Powell Rooms Availability</a></h4>
 		<div id="powell-availability" style="background-color:#3EAF19;padding:8px">
 			<table>
@@ -136,6 +145,49 @@ function clicc_homepage_block_contents($delta) {
 			</tr>
 			</table>
 		</div>';
+		*/
+	
+		$html .= '
+		    <div id="group study" style="background-color:#04B4AE;padding:8px">
+		
+			<table  style="width: 280px">
+			<tr>
+				<td style ="line-height:70%"><font size="0.5" color="#E3F6CE">Reservation <br> Length</font></td>
+				<td><a href="http://www.library.ucla.edu/reservations/powell" target="_blank" style="text-decoration: underline"><strong><font color="#E6E6E6" size="1">POWELL</font></strong></a></td>
+				<td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><font color="#E3F6CE" size="1"><strong>YRL Room</font></strong></a></td>
+				<td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><strong><font color="#E6E6E6" size="1">YRL Pod</font></strong></a></td>
+			</tr>
+			<tr style ="line-height:50%"><td><br/></td></tr>
+			
+			<tr>
+			    <td><strong><font color="#E3F6CE">30 min</font></strong></td>
+				<td><a href="http://www.library.ucla.edu/reservations/powell" target="_blank" style="text-decoration: underline"><font color="#E6E6E6" size="2.5">'; $html .= convertHalfHourToTime($pow30); $html .= '</font></a></td>
+				<td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><font color="#E3F6CE" size="2.5">'; $html .= convertHalfHourToTime($yrlGSS30); $html .= '</font></a></td>
+				<td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><font color="#E6E6E6" size="2.5">'; $html .= convertHalfHourToTime($yrlPods30); $html .= '</font></a></td>	
+			</tr>
+			<tr>
+				<td><strong><font color="#E3F6CE">60 min</font></strong></td>
+				<td><a href="http://www.library.ucla.edu/reservations/powell" target="_blank" style="text-decoration: underline"><font color="#E6E6E6" size="2.5">'; $html .= convertHalfHourToTime($pow60); $html .= '</font></a></td>
+				<td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><font color="#E3F6CE" size="2.5">'; $html .= convertHalfHourToTime($yrlGSS60); $html .= '</font></a></td>
+				<td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><font color="#E6E6E6" size="2.5">'; $html .= convertHalfHourToTime($yrlPods60); $html .= '</font></a></td>
+			</tr>	
+			<tr>
+				<td><strong><font color="#E3F6CE">90 min</font></strong></td>
+				<td><a href="http://www.library.ucla.edu/reservations/powell" target="_blank" style="text-decoration: underline"><font color="#E6E6E6" size="2.5">'; $html .= convertHalfHourToTime($pow90); $html .= '</font></a></td>
+				<td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><font color="#E3F6CE" size="2.5">'; $html .= convertHalfHourToTime($yrlGSS90); $html .= '</font></a></td>
+				<td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><font color="#E6E6E6" size="2.5">'; $html .= convertHalfHourToTime($yrlPods90); $html .= '</font></a></td>
+			</tr>
+			<tr>
+			    <td><strong><font color="#E3F6CE">120 min</font></strong></td>
+			    <td><a href="http://www.library.ucla.edu/reservations/powell" target="_blank" style="text-decoration: underline"><font color="#E6E6E6" size="2.5">'; $html .= convertHalfHourToTime($pow120); $html .= '</font></a></td>
+			    <td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><font color="#E3F6CE" size="2.5">'; $html .= convertHalfHourToTime($yrlGSS120); $html .= '</font></a></td>
+				<td><a href="http://www.library.ucla.edu/reservations/yrl" target="_blank" style="text-decoration: underline"><font color="#E6E6E6" size="2.5">'; $html .= convertHalfHourToTime($pow120); $html .= '</font></a></td>
+			</tr>
+			</table>
+			</div>';
+	
+	
+	
 	// Links: "Group Study Spaces", "How to Log In", and "How to Print"
 	$html .= '
 			</div>
@@ -150,6 +202,9 @@ function clicc_homepage_block_contents($delta) {
 				</ul>
 			</div>
 		</div>';
+		
+		
+		
 				
 	////////////////////
 	/// Right Column

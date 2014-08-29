@@ -1,0 +1,7 @@
+name = "ORCID Redirect"
+description = "Provides user-specific redirect to ORCID page for authenticated users ."
+package = "Other"
+core = "7.x"
+version = "7.x-1.0"
+dependencies[] = orcid_integration
+
