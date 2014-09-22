@@ -1,6 +1,6 @@
 <?php
 
-// Site-specific settings for www stage
+// Site-specific settings for old-stage
 // Get database info from file which is excluded from repo
 require_once('stage.settings-db.php');
 
