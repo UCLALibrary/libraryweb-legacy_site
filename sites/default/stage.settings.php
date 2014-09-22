@@ -9,7 +9,7 @@ $conf['cache_backends'][] = 'sites/all/modules/memcache/memcache.inc';
 $conf['cache_default_class'] = 'MemCacheDrupal';
 
 $conf['memcache_servers'] = array(
-  'stage-memcached.library.ucla.edu:11211' => 'default',
+  'old-stage-memcached.library.ucla.edu:11211' => 'default',
 );
 
 // This was set to TRUE in main settings.php but the other 
