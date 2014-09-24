@@ -464,6 +464,7 @@ $env_include = array (
   'old-stage.library.ucla.edu' => 'stage.settings.php',
   'old-stage1.library.ucla.edu' => 'stage.settings.php',
   'old-stage2.library.ucla.edu' => 'stage.settings.php',
+  'old-www.library.ucla.edu' => 'stage.settings.php',
   'www.library.ucla.edu' => 'prod.settings.php',
   'library.ucla.edu' => 'prod.settings.php',
   'www-prod1.library.ucla.edu' => 'prod.settings.php',
