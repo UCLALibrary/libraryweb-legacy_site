@@ -458,18 +458,13 @@ $conf['cache_class_cache_form'] = 'DrupalDatabaseCache';
 // Use both top-level (Varnish/Pound) and webhead-level name.
 $env_include = array (
   'uclalib.local' => 'dev.settings.php',
-  'www-test.library.ucla.edu' => 'test.settings.php',
-  'www-test1.library.ucla.edu' => 'test.settings.php',
-  'www-test2.library.ucla.edu' => 'test.settings.php',
+  'old-test.library.ucla.edu' => 'test.settings.php',
+  'old-test1.library.ucla.edu' => 'test.settings.php',
+  'old-test2.library.ucla.edu' => 'test.settings.php',
   'old-stage.library.ucla.edu' => 'stage.settings.php',
   'old-stage1.library.ucla.edu' => 'stage.settings.php',
   'old-stage2.library.ucla.edu' => 'stage.settings.php',
   'old-www.library.ucla.edu' => 'stage.settings.php',
-  'www.library.ucla.edu' => 'prod.settings.php',
-  'library.ucla.edu' => 'prod.settings.php',
-  'www-prod1.library.ucla.edu' => 'prod.settings.php',
-  'www-prod2.library.ucla.edu' => 'prod.settings.php',
-  'www-prod3.library.ucla.edu' => 'prod.settings.php',
 );
 
 if (isset($env_include[$_SERVER['HTTP_HOST']])) {

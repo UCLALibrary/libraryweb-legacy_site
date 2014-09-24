@@ -1,6 +1,6 @@
 <?php
 
-// Site-specific settings for www test
+// Site-specific settings for old-test
 // Get database info from file which is excluded from repo
 require_once('test.settings-db.php');
 
@@ -9,7 +9,7 @@ $conf['cache_backends'][] = 'sites/all/modules/memcache/memcache.inc';
 $conf['cache_default_class'] = 'MemCacheDrupal';
 
 $conf['memcache_servers'] = array(
-  'test-memcached.library.ucla.edu:11211' => 'default',
+  'old-test-memcached.library.ucla.edu:11211' => 'default',
 );
 
 // This was set to TRUE in main settings.php but the other 
